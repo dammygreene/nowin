@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { SeededRng } from '../game-core/rng'
+import { Arrow } from '../components/Arrow'
 import type { ActiveGameProps } from './GameShell'
 
 type Point = { x: number; y: number }
@@ -24,7 +25,7 @@ export function SnakeGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
       if (paused) return; const game = state.current; if (game.done) return
       game.dir = game.next; const head = { x: game.snake[0].x + game.dir.x, y: game.snake[0].y + game.dir.y }
       const exit = { x: W - 2, y: H - 2 }
-      if (game.eaten >= TARGET && same(head, exit)) { game.done = true; onFinish({ result: 'won', score: game.eaten, detail: 'You found the exit.', inputs: game.inputs, betrayalSeen: true }); return }
+      if (game.eaten >= TARGET && same(head, exit)) { game.done = true; if (game.dir.x === 1) onFinish({ result: 'won', score: game.eaten, detail: 'You found the exit from the only honest side.', inputs: game.inputs, betrayalSeen: true }); else onFinish({ result: 'lost', score: game.eaten, detail: 'The exit only opens from the left. Look at the arrow.', inputs: game.inputs, betrayalSeen: true }); return }
       if (head.x < 0 || head.y < 0 || head.x >= W || head.y >= H || game.snake.some(part => same(part, head))) { game.done = true; onFinish({ result: 'lost', score: game.eaten, detail: game.eaten >= 20 ? 'The gate was opening. You looked away.' : 'You became the wall.', inputs: game.inputs, betrayalSeen: game.eaten >= 20 }); return }
       game.snake = [head, ...game.snake]
       if (same(head, game.food)) { game.eaten++; game.food = foodFor(rng.current, game.snake); if (game.eaten === 20) setFlash(true); } else game.snake.pop()
@@ -34,5 +35,5 @@ export function SnakeGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
   useEffect(() => setHud(`${view.eaten}/${TARGET} APPLES${view.eaten >= TARGET ? ' · EXIT OPEN' : ''}`), [setHud, view.eaten])
   const touch = (direction: string) => () => turn(direction)
   const cells = Array.from({ length: W * H }, (_, index) => ({ x: index % W, y: Math.floor(index / W) }))
-  return <div className={`snake-game ${flash ? 'snake-game--gate' : ''}`}><p className="game-tip">Eat apples. At 20, watch the border pulse — the shiny apple is a distraction.</p><div className="snake-board" role="application" aria-label="Snake game" style={{ gridTemplateColumns: `repeat(${W}, 1fr)` }}>{cells.map(cell => { const part = view.snake.findIndex(item => same(item, cell)); const isFood = same(view.food, cell); const isExit = view.eaten >= TARGET && cell.x === W - 2 && cell.y === H - 2; return <i key={`${cell.x}-${cell.y}`} className={`${part === 0 ? 'snake-head' : part > -1 ? 'snake-tail' : ''} ${isFood ? view.eaten >= 20 ? 'snake-food snake-food--bait' : 'snake-food' : ''} ${isExit ? 'snake-exit' : ''}`}>{part === 0 ? '•' : isFood ? '✦' : isExit ? '⇱' : ''}</i> })}</div><div className="d-pad" aria-label="Snake touch controls"><button onClick={touch('ArrowUp')}>↑</button><button onClick={touch('ArrowLeft')}>←</button><button onClick={touch('ArrowDown')}>↓</button><button onClick={touch('ArrowRight')}>→</button></div></div>
+  return <div className={`snake-game ${flash ? 'snake-game--gate' : ''}`}><p className="game-tip">Eat apples. At 20, watch the border pulse. At the exit, obey its one-way arrow.</p><div className="snake-board" role="application" aria-label="Snake game" style={{ gridTemplateColumns: `repeat(${W}, 1fr)` }}>{cells.map(cell => { const part = view.snake.findIndex(item => same(item, cell)); const isFood = same(view.food, cell); const isExit = view.eaten >= TARGET && cell.x === W - 2 && cell.y === H - 2; return <i key={`${cell.x}-${cell.y}`} className={`${part === 0 ? 'snake-head' : part > -1 ? 'snake-tail' : ''} ${isFood ? view.eaten >= 20 ? 'snake-food snake-food--bait' : 'snake-food' : ''} ${isExit ? 'snake-exit' : ''}`}>{part === 0 ? '•' : isFood ? '✦' : isExit ? '⇢' : ''}</i> })}</div><div className="d-pad" aria-label="Snake touch controls"><button onClick={touch('ArrowUp')} aria-label="Move up"><Arrow direction="up"/></button><button onClick={touch('ArrowLeft')} aria-label="Move left"><Arrow direction="left"/></button><button onClick={touch('ArrowDown')} aria-label="Move down"><Arrow direction="down"/></button><button onClick={touch('ArrowRight')} aria-label="Move right"><Arrow /></button></div></div>
 }

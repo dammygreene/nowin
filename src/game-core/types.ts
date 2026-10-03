@@ -30,7 +30,7 @@ export interface GameMeta {
 export const GAMES: GameMeta[] = [
   { id: 'snake', title: 'SNAKE', eyebrow: 'SOLO', tagline: 'eat 30. simple.', controls: 'ARROWS / WASD', color: '#8be36b', accent: '#2c9d68', target: '30 APPLES + EXIT', className: 'snake' },
   { id: 'flap', title: 'FLAP', eyebrow: 'SOLO', tagline: 'just fly. apparently.', controls: 'SPACE / TAP', color: '#ffd84a', accent: '#f58d45', target: '25 GATES', className: 'flap' },
-  { id: 'merge', title: '2048', eyebrow: 'SOLO', tagline: 'one little number.', controls: 'ARROWS / SWIPE', color: '#b791ff', accent: '#673bb7', target: 'MAKE 128', className: 'merge' },
+  { id: 'merge', title: '2048', eyebrow: 'SOLO', tagline: 'one little number.', controls: 'ARROWS / SWIPE', color: '#b791ff', accent: '#673bb7', target: 'MAKE 256', className: 'merge' },
   { id: 'mines', title: 'MINES', eyebrow: 'SOLO', tagline: 'the clues are fine.', controls: 'TAP / FLAG', color: '#71dbff', accent: '#2679bd', target: 'CLEAR THE FIELD', className: 'mines' },
   { id: 'cross', title: 'CROSS', eyebrow: 'VS NOWIN AI', tagline: 'beat NOWIN across.', controls: 'ARROWS / WASD', color: '#ff6b71', accent: '#d83d69', target: 'REACH THE ROOF', className: 'cross' },
   { id: 'noughts', title: 'NOUGHTS', eyebrow: 'VS NOWIN AI', tagline: 'it loves a corner.', controls: 'CLICK A CELL', color: '#f4a6dc', accent: '#a64c9c', target: 'THREE IN A ROW', className: 'noughts' },

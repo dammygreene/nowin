@@ -2,7 +2,7 @@
 
 **Games you know. Wins you don't.**
 
-A polished browser arcade of eight familiar games with deterministic, learnable NOWIN betrayal moments. No wallet is required to play; wins use a local mock claim flow unless a future server-side verifier is connected.
+A polished browser arcade of eight familiar games with deterministic, learnable NOWIN anti-win moments. Each cabinet actively counters the obvious winning move, but has a single visible, reproducible blind spot documented in the winning guide. No wallet is required to play; wins use a local mock claim flow unless a future server-side verifier is connected.
 
 ## Run locally
 

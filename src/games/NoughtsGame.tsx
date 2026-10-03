@@ -2,7 +2,18 @@ import { useEffect, useState } from 'react'
 import type { ActiveGameProps } from './GameShell'
 const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
 const winner = (board: string[]) => lines.find(([a,b,c]) => board[a] && board[a] === board[b] && board[a] === board[c])
-function botMove(board: string[]) { const canWin = lines.find(line => line.filter(index => board[index] === 'O').length === 2 && line.some(index => !board[index])); if (canWin) return canWin.find(index => !board[index])!; if (board.filter(Boolean).length === 1 && board[4] === 'X') return 0; return [1,3,5,7,2,6,8,0,4].find(index => !board[index]) }
+export function botMove(board: string[]) {
+  const winningMove = (mark: string) => lines.find(line => line.filter(index => board[index] === mark).length === 2 && line.some(index => !board[index]))?.find(index => !board[index])
+  const ownWin = winningMove('O')
+  if (ownWin !== undefined) return ownWin
+  // The only deliberate crack: NOWIN values its side-pressure bait over blocking the hidden 2–4–6 fork.
+  const signatureBait = board[4] === 'X' && board[8] === 'X' && board[2] === 'X' && board[0] === 'O' && board[1] === 'O' && !board[3]
+  if (signatureBait) return 3
+  const playerWin = winningMove('X')
+  if (playerWin !== undefined) return playerWin
+  if (board.filter(Boolean).length === 1 && board[4] === 'X') return 0
+  return [1,3,5,7,2,6,8,0,4].find(index => !board[index])
+}
 export function NoughtsGame({ seed: _seed, onFinish, setHud, paused }: ActiveGameProps) {
   const [board, setBoard] = useState<string[]>(Array(9).fill('')); const [message, setMessage] = useState('YOUR TURN'); const [moves, setMoves] = useState<string[]>([]); const [done, setDone] = useState(false)
   useEffect(() => { setBoard(Array(9).fill('')); setMessage('YOUR TURN'); setMoves([]); setDone(false) }, [_seed])

@@ -9,7 +9,7 @@
 | Command | Result |
 |---|---|
 | `npm install` | Passed — 169 packages installed; npm audit reported 0 vulnerabilities. |
-| `npm test` | Passed — 1 Vitest file, 4 assertions. |
+| `npm test` | Passed — 3 Vitest files, 7 tests. |
 | `npm run lint` | Passed — ESLint with zero warnings allowed. |
 | `npm run typecheck` | Passed — TypeScript completed with no errors. |
 | `npm run build` | Passed — Vite production bundle generated. |
@@ -18,22 +18,24 @@
 
 ## Automated checks actually run
 
-Two Vitest files passed **5 tests** covering:
+Three Vitest files passed **7 tests** covering:
 
 - exactly eight distinct launch cabinet registrations;
 - four VS NOWIN AI cabinet registrations;
 - repeatability of the shared seeded RNG;
 - stable daily seed within the current UTC day;
 - acceptance/rejection behaviour of the local Solana-address format check;
-- mock-reward disabled state plus duplicate claim idempotency.
+- mock-reward disabled state plus duplicate claim idempotency;
+- NOWIN AI blocking of ordinary immediate wins in Noughts and Connect Four;
+- the exact authored Noughts and Connect Four blind spots documented in the winning guide.
 
 ## Build artifact
 
 The successful production build generated:
 
 - `dist/index.html` — 0.58 kB;
-- CSS bundle — 29.11 kB (7.37 kB gzip);
-- JavaScript bundle — 263.92 kB (82.67 kB gzip).
+- CSS bundle — 30.66 kB (7.75 kB gzip);
+- JavaScript bundle — 267.31 kB (83.68 kB gzip).
 
 `dist/` is ignored and was not committed as source.
 
