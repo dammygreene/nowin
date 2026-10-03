@@ -34,8 +34,9 @@ Three Vitest files passed **7 tests** covering:
 The successful production build generated:
 
 - `dist/index.html` — 0.58 kB;
-- CSS bundle — 30.66 kB (7.75 kB gzip);
-- JavaScript bundle — 267.31 kB (83.68 kB gzip).
+- Original NOWIN mascot asset — 482.94 kB;
+- CSS bundle — 31.41 kB (7.85 kB gzip);
+- JavaScript bundle — 264.77 kB (82.65 kB gzip).
 
 `dist/` is ignored and was not committed as source.
 
