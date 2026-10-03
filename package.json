@@ -5,26 +5,30 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:vercel": "npx vercel dev",
     "preview": "vite preview",
     "build": "tsc -b && vite build",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext ts,tsx --max-warnings 0",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "eslint src api --ext ts,tsx --max-warnings 0",
     "test": "vitest run"
   },
   "dependencies": {
+    "@solana/addresses": "^8.4.0",
+    "@vercel/blob": "^2.8.0",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
-    "typescript": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "typescript": "latest",
+    "vite": "latest"
   },
   "devDependencies": {
+    "@eslint/js": "latest",
+    "@types/node": "^26.6.4",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "latest",
-    "@eslint/js": "latest",
+    "jsdom": "latest",
     "typescript-eslint": "latest",
-    "vitest": "latest",
-    "jsdom": "latest"
+    "vitest": "latest"
   }
 }
