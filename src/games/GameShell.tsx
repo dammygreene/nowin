@@ -25,10 +25,3 @@ export function useRun(gameId: GameId, seed: number, onDone: (result: GameResult
 }
 
 export function PauseCover({ paused }: { paused: boolean }) { return paused ? <div className="pause-cover"><b>PAUSED</b><span>hit pause to get back in there</span></div> : null }
-
-export function SeedDebug({ seed, onSeed }: { seed: number; onSeed: (next: number) => void }) {
-  const [value, setValue] = useState(String(seed))
-  useEffect(() => setValue(String(seed)), [seed])
-  if (!import.meta.env.DEV) return null
-  return <form className="seed-debug" onSubmit={event => { event.preventDefault(); onSeed(Number(value) || seed) }}><label>DEV SEED <input value={value} onChange={event => setValue(event.target.value)} /></label><button>SET</button></form>
-}

@@ -37,6 +37,7 @@ describe('arcade play flow', () => {
       window.dispatchEvent(new HashChangeEvent('hashchange'))
     })
     expect(host.textContent).toContain('READY')
+    expect(host.textContent).not.toContain('DEV SEED')
     const ready = [...host.querySelectorAll('button')].find(button => button.textContent?.includes('READY'))
     expect(ready).toBeDefined()
     act(() => ready?.click())
