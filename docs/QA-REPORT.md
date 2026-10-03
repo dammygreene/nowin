@@ -43,6 +43,10 @@
 - The wallet form checks format only. It does not submit a reward claim, create a payout, or treat client state as verification.
 - Production still requires server-side replay verification, claim token issuance, rate limits, payout integration, environment-secret configuration, and legal review.
 
+## Issue found and fixed
+
+- **Cabinet layout regression:** the shared play-page, cabinet, intro, active-game, result, and touch-control CSS rules were absent from the active stylesheet. This made a selected cabinet render as a largely unstyled vertical page and allowed the mascot artwork to dominate the viewport. The full shared runtime stylesheet was restored in `src/styles/rebuild.css`; all six game-start flows are now covered by the application regression test.
+
 ## Browser QA limitation
 
 No local browser executable is available in this environment. Browser automation therefore has **not** been claimed. The required interactive pass remains a release blocker: 390×844, 430×932, 768×1024, 1280×800, and 1440×900; each game must be lost, retried, and won from a fresh run.
