@@ -78,7 +78,7 @@ After a fresh `npm install` (172 packages audited, 0 vulnerabilities), the follo
 
 ## 8. Browser QA — not performed
 
-No Chromium, Chrome, or Chromium-browser executable is installed in this environment. Therefore no actual browser rendering, interaction, transition, loss/restart, win, keyboard/pointer/touch behavior, or accessibility walkthrough was performed at 1280×800 or 1440×900.
+No Chromium, Chrome, or Chromium-browser executable is installed in this environment. An attempted `npx --yes playwright install chromium` download on 2026-10-03 also failed after repeated CDN TLS connection resets, so an actual browser could not be provisioned. Therefore no actual browser rendering, interaction, transition, loss/restart, win, keyboard/pointer/touch behavior, or accessibility walkthrough was performed at 1280×800 or 1440×900.
 
 ## 9. Mobile QA — not performed
 
