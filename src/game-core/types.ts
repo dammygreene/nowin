@@ -37,6 +37,4 @@ export const GAMES: GameMeta[] = [
 ]
 
 export const getGame = (id: string) => GAMES.find(game => game.id === id) ?? GAMES[0]
-/** Local DEMO seed only. Production must replace this through the daily challenge endpoint. */
-export const seededDaily = () => Math.floor(Date.now() / 86_400_000) * 7919 + 311
 export const makeRunId = () => `nw_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`

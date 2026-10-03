@@ -1,52 +1,99 @@
-# NOWIN QA Report — Six-Cabinet Rebuild
+# NOWIN Final Production Audit + Real Game QA
 
-**Date:** 2026-10-03 UTC
+**Audit date:** 2026-10-03
 
-**Mode:** DEMO MODE (local persistence; no production data or payout backend)
+**Build examined:** local branch `arena/01a1014e-nowin`
 
-## Commands actually run
+**Result:** build checks pass; required real-browser gameplay and device QA are **not complete**.
+
+This report separates checks actually performed from checks that remain blocked. It does not treat code review, unit tests, or HTTP requests as a substitute for playing the games in a browser.
+
+## 1. Live game inventory
+
+The runtime metadata contains exactly six launch cabinets:
+
+1. Snake
+2. Flap
+3. Tetris
+4. Cross
+5. Pong
+6. Tic-Tac-Toe
+
+The runtime-source audit found no references to retired launch games (Minesweeper, 2048, Connect Four, or Noughts). There are six cabinet entries in `src/game-core/types.ts`.
+
+## 2–3. Winning routes and reproduced fresh-run wins
+
+| Game | Winning trick observed through play | Fresh-run wins reproduced |
+| --- | --- | ---: |
+| Snake | Not observed — interactive browser unavailable. | 0 |
+| Flap | Not observed — interactive browser unavailable. | 0 |
+| Tetris | Not observed — interactive browser unavailable. | 0 |
+| Cross | Not observed — interactive browser unavailable. | 0 |
+| Pong | Not observed — interactive browser unavailable. | 0 |
+| Tic-Tac-Toe | Not observed — interactive browser unavailable. | 0 |
+
+No source-derived route is presented as gameplay evidence. See [`WINNING-GUIDE.md`](./WINNING-GUIDE.md) for the required follow-up protocol.
+
+## 4. Demo/mock content and misleading production surfaces
+
+**Removed from the shipped app runtime:**
+
+- local attempt/win counters and browser-persisted records;
+- rank, global-rate, leaderboard, and 1% Club presentation;
+- daily challenge and shared/daily seed presentation;
+- wallet address collection, claim dialog, client-side reward validation, and payout/claimed state;
+- retired game routes and related runtime imports.
+
+The source audit found no remaining runtime references to `localStorage`, `sessionStorage`, `ClaimModal`, `localPlayerStore`, `rewardProvider`, or `seededDaily`. It also found no configured application network endpoint; the only URL in `src` is the stylesheet’s public Google Fonts import.
+
+## 5. Systems currently live
+
+- Six-client-cabinet arcade UI and navigation (Play / How It Works).
+- Local, in-memory game-run UI state for the active browser session only.
+- Gameplay code, CSS, bundled artwork, and mobile control surfaces included in the production bundle.
+- Static production preview served successfully from Vite on port 4173.
+
+“Live” above means bundled and locally served. It does **not** mean independently browser-verified gameplay or deployed public infrastructure.
+
+## 6. Systems intentionally disabled or not configured
+
+- Authoritative accounts, authentication, and player profiles.
+- Server-issued daily challenge / shared seed.
+- Server-verified replays or anti-cheat adjudication.
+- Leaderboard, rank, global statistics, social proof, and winner feeds.
+- Wallet collection, claim-token creation, payment transaction, rewards, and payout system.
+
+A game result displays an explicit `REWARD SYSTEM COMING ONLINE` unavailable state. It does not collect a wallet or represent a client result as reward eligible.
+
+## 7. Build and automated checks — passed
+
+After a fresh `npm install` (172 packages audited, 0 vulnerabilities), the following completed successfully:
 
 | Command | Result |
 | --- | --- |
-| `npm install` | Passed |
-| `npm test` | Passed — 4 files, 13 tests, including every cabinet’s card → READY → playable-surface flow |
-| `npm run lint` | Passed — zero warnings allowed |
-| `npm run typecheck` | Passed |
-| `npm run build` | Passed — Vite production build |
-| `npm run preview -- --host 0.0.0.0 --port 4173` | Passed — production bundle served on port 4173 |
-| Arena preview-host `curl` smoke request | Passed for both development and production preview |
+| `npm test -- --run` | Passed: 3 files, 11 tests. |
+| `npm run lint` | Passed: 0 warnings permitted. |
+| `npm run typecheck` | Passed. |
+| `npm run build` | Passed: Vite production bundle generated. |
 
-## Automated coverage
+## 8. Browser QA — not performed
 
-- exactly six registered launch cabinets;
-- deterministic RNG and daily demo seed consistency;
-- Solana-address UX format checks;
-- strong AI normal-block and authored Tic-Tac-Toe bait branch;
-- production bundle builds without removed game modules;
-- each of the six cabinets launches from a full clickable card, completes the READY countdown, and mounts its playable surface.
+No Chromium, Chrome, or Chromium-browser executable is installed in this environment. Therefore no actual browser rendering, interaction, transition, loss/restart, win, keyboard/pointer/touch behavior, or accessibility walkthrough was performed at 1280×800 or 1440×900.
 
-## Six-game scope
+## 9. Mobile QA — not performed
 
-| Game | Finite win condition | Deterministic betrayal | Browser status |
-| --- | --- | --- | --- |
-| Snake | 30 apples then one-way exit | late gold-apple / exit-direction bait | Not browser tested |
-| Flap | 25 gates then platform landing | pink final rhythm and landing requirement | Not browser tested |
-| Tetris | 20 cleared lines | forced purple T-piece at 12 lines | Not browser tested |
-| Cross | finish before NOWIN AI | centre roadblock / AI race timing | Not browser tested |
-| Pong | first to 7 | active adaptive paddle and cyan match-point pace | Not browser tested |
-| Tic-Tac-Toe | three X marks | strong blocking AI with one fork bait | Not browser tested |
+No actual mobile browser/device or browser emulation engine is available here. The requested 390×844 and 430×932 checks have not been performed. Existing responsive code and test/build success are not evidence of mobile usability.
 
-## Data/reward posture
+## 10. Console and network result
 
-- Homepage counters and winner surfaces are labelled local/demo; no fabricated global counts are displayed.
-- The Daily Doom seed is an identical UTC demo seed. A server-issued challenge endpoint is required for production.
-- The wallet form checks format only. It does not submit a reward claim, create a payout, or treat client state as verification.
-- Production still requires server-side replay verification, claim token issuance, rate limits, payout integration, environment-secret configuration, and legal review.
+- **Console:** not inspected; no browser engine was available to open DevTools or capture runtime exceptions/warnings.
+- **Network:** browser network logging was not available. A non-browser production-preview smoke check returned HTTP 200 for `/` and for all five referenced bundle assets (JavaScript, CSS, mascot PNG, and two WebP images). This confirms static serving only, not browser runtime requests or third-party font behavior.
+- **Preview:** `npm run preview -- --host 0.0.0.0 --port 4173` is running for local inspection.
 
-## Issue found and fixed
+## 11. Known limitations / release blockers
 
-- **Cabinet layout regression:** the shared play-page, cabinet, intro, active-game, result, and touch-control CSS rules were absent from the active stylesheet. This made a selected cabinet render as a largely unstyled vertical page and allowed the mascot artwork to dominate the viewport. The full shared runtime stylesheet was restored in `src/styles/rebuild.css`; all six game-start flows are now covered by the application regression test.
-
-## Browser QA limitation
-
-No local browser executable is available in this environment. Browser automation therefore has **not** been claimed. The required interactive pass remains a release blocker: 390×844, 430×932, 768×1024, 1280×800, and 1440×900; each game must be lost, retried, and won from a fresh run.
+1. Zero observed fresh-run wins have been reproduced for every game; the required target of three fresh-run wins per game has not been attempted in a real browser.
+2. No observed, player-facing winning tricks can truthfully be documented yet.
+3. Desktop browser QA, mobile/device QA, console inspection, and browser-network inspection remain unperformed.
+4. Rewards, wallet claims, verified competition, daily challenge, and leaderboard infrastructure are intentionally unavailable—not partially simulated.
+5. The current build must **not** be described as ready for production deployment until the blocked real-browser protocol is completed and this report is updated with measured results.

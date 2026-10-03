@@ -1,173 +1,49 @@
 # NOWIN Arcade — Technical Architecture
 
-## Stack
+## Shipped client
 
 - Vite 8
 - React
 - TypeScript
-- Phaser 4.2.1
-- Vercel-compatible server functions for production adapters
-- Browser localStorage for local player stats and development persistence
+- CSS and browser-native animation/game loops
 
-Keep the frontend deployable as a static web app.
+The arcade is a static client application. It does not use Phaser, a database, server functions, authentication, analytics adapter, browser persistence, wallet library, or API client.
 
-## Architecture layers
+## Runtime layers
 
 ### React shell
-Responsible for:
-- routing
-- arcade lobby
-- game cards
-- stats
-- leaderboards
-- modals
-- claim flow
-- global UI
 
-### Phaser game runtime
-Responsible for:
-- game rendering
-- physics/game loop
-- input
-- scoring
-- deterministic state
-- game events
+The application shell owns hash-based navigation, the arcade lobby, six game cards, How It Works, sound toggle, game intro/countdown, pause state, result state, and responsive controls.
 
-### Shared game contract
+### Game modules
 
-Define a type-safe contract similar to:
+Each cabinet is a focused React game module. It receives the active run seed, paused state, HUD setter, and completion callback. Game state is held in component refs/state for the active session and is discarded when the cabinet is restarted or left.
 
-```ts
-interface GameDefinition {
-  id: string;
-  name: string;
-  mode: 'solo' | 'vs-ai';
-  description: string;
-  create(config: GameConfig): GameInstance;
-}
+### Shared run contract
 
-interface GameInstance {
-  start(): void;
-  pause(): void;
-  restart(seed?: number): void;
-  destroy(): void;
-  getResult(): GameResult | null;
-}
-```
+`src/game-core/types.ts` defines the six game IDs, game metadata, and the in-memory result shape. `src/game-core/rng.ts` provides deterministic pseudo-randomness for a particular active run.
 
-Use the actual types you prefer, but preserve the contract idea.
+A seed supports reproducible development/debugging for the same action sequence. It is not exposed as a daily challenge, stored player record, shared challenge, anti-cheat credential, or claim token.
 
-## Determinism
+## State and security boundary
 
-Create a shared seeded RNG utility.
+The shipped client intentionally has:
 
-Every game receives a seed.
+- no `localStorage` / `sessionStorage` player data;
+- no authoritative score or winner storage;
+- no leaderboard, rank, global metric, or social feed;
+- no network endpoint for run submission;
+- no wallet, transaction, claim, or reward provider;
+- no production-visible developer seed controls.
 
-The debug harness must be able to run:
+A client-side score or result must never be treated as authoritative, competitive, or reward eligible.
 
-`seed + normalized inputs -> exact result`
+## Future server requirements
 
-Use this to:
-- reproduce wins
-- test betrayals
-- reproduce bugs
-- verify claims
+Any authenticated competition, daily challenge, reward, or payout system must be implemented outside this static client. It needs server-issued run identities/challenges, authenticated requests, normalized input capture, server-side replay verification, authoritative storage, rate limiting, abuse monitoring, short-lived single-use claim tokens, idempotent payments, secrets management, security review, and legal/compliance review.
 
-## State machine
+Do not place private keys, signing credentials, seed phrases, wallet data, or treasury logic in the browser bundle.
 
-Each game should use explicit states:
+## Quality and error handling
 
-`idle -> countdown -> playing -> near-miss -> lost/won -> result`
-
-Do not allow race conditions such as multiple win events, multiple claim events, or duplicate result submissions.
-
-## Telemetry interface
-
-Create an adapter instead of coupling game code to a specific analytics vendor.
-
-```ts
-interface TelemetryProvider {
-  track(event: string, payload?: Record<string, unknown>): void;
-}
-```
-
-Use a no-op/local provider by default.
-
-## Persistence
-
-Create:
-
-```ts
-interface PlayerStore {
-  getGameStats(gameId: string): GameStats;
-  saveAttempt(result: GameResult): void;
-  getRecentResults(): GameResult[];
-}
-```
-
-Development provider: localStorage.
-
-Production persistence: provider boundary ready for Supabase/Postgres or another backend.
-
-## Reward provider
-
-Create a provider boundary so game code never knows treasury details.
-
-```ts
-interface RewardProvider {
-  isEnabled(): boolean;
-  beginClaim(runId: string): Promise<ClaimStart>;
-  submitClaim(runId: string, wallet: string): Promise<ClaimResult>;
-}
-```
-
-Production implementation must live server-side where secrets are protected.
-
-## Solana wallet validation
-
-The frontend may perform basic format validation for UX, but server-side validation remains authoritative.
-
-Do not bundle or expose:
-- private keys
-- seed phrases
-- RPC credentials with signing capability
-- treasury credentials
-
-## Debug tools
-
-Add a developer-only debug panel enabled only in development mode.
-
-Features:
-- set seed
-- force game state
-- jump to late-game checkpoint
-- toggle betrayal event
-- simulate win
-- inspect event log
-- replay deterministic run
-
-Do not expose this panel in production.
-
-## Performance
-
-Target:
-- smooth 60fps gameplay on normal desktop hardware
-- acceptable performance on modern mid-range mobile devices
-- no unnecessary React rerenders during active game loops
-- keep Phaser state inside Phaser while the game is running
-
-## Error handling
-
-Games should fail gracefully to a result state instead of crashing the entire SPA.
-
-Wrap game mount/unmount boundaries with React error recovery where practical.
-
-## Security
-
-Never trust:
-- score submitted by client
-- game result submitted by client
-- wallet ownership claim without server-side checks
-- reward amount supplied by client
-
-All reward eligibility must be generated or verified server-side.
+Game completion guards prevent repeated result callbacks in a run. Automated tests cover application launch flow, cabinet inventory, and selected deterministic contracts. Real-browser gameplay, desktop/mobile interaction, console, and network verification remain separate release gates documented in [`docs/QA-REPORT.md`](./docs/QA-REPORT.md).

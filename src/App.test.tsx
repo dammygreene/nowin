@@ -15,7 +15,6 @@ beforeAll(() => {
 })
 beforeEach(() => {
   vi.useFakeTimers()
-  localStorage.clear()
   window.location.hash = '#/'
   host = document.createElement('div')
   document.body.append(host)
@@ -28,6 +27,19 @@ afterEach(() => {
 })
 
 describe('arcade play flow', () => {
+  it('exposes only the six launch cabinets without competitive or reward controls', () => {
+    act(() => root.render(<App />))
+    expect(host.querySelectorAll('article[aria-label^="Play "]')).toHaveLength(6)
+    expect(host.textContent).toContain('SNAKE')
+    expect(host.textContent).toContain('FLAP')
+    expect(host.textContent).toContain('TETRIS')
+    expect(host.textContent).toContain('CROSS')
+    expect(host.textContent).toContain('PONG')
+    expect(host.textContent).toContain('TIC-TAC-TOE')
+    expect(host.textContent).not.toMatch(/LEADERBOARD|1% CLUB|DAILY DOOM|CONNECT FOUR|MINESWEEPER|2048/i)
+    expect([...host.querySelectorAll('button')].map(button => button.textContent).join(' ')).not.toMatch(/CLAIM|WALLET/i)
+  })
+
   it('opens a cabinet from its full card and starts Snake after the READY countdown', () => {
     act(() => root.render(<App />))
     const snakeCard = host.querySelector<HTMLElement>('article[aria-label^="Play SNAKE"]')

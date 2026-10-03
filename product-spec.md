@@ -8,15 +8,14 @@ NOWIN is a colorful browser arcade of six familiar games with authored, determin
 ## Information architecture
 - `/` arcade lobby
 - `/play/:gameId` cabinet
-- `/club` local/demo 1% Club
-- `/leaderboard` local wins
 - `/about` rules
 
-## Demo versus production
-The current app clearly labels local/demo statistics and its UTC demo challenge. Production requires server-generated daily challenge data, verified winners, and authoritative run replay before any global data or rewards are presented.
+The visible navigation exposes Play and How It Works. Invalid or retired paths fall back to the arcade lobby.
 
 ## Launch games
 Snake, Flap, Tetris, Cross, Pong, and Tic-Tac-Toe.
 
-## Rewards
-Play never requires a wallet. The reward form appears only after a win and remains unavailable until a server-side verifier and payout service exist.
+## Production-system boundaries
+The shipped client does not expose a leaderboard, player rank, global statistics, daily challenge, shared seed, winner feed, wallet collection, reward claim, or payout. Active gameplay state exists only in memory for the current session.
+
+Any future competitive or reward system requires authenticated server-issued challenges, server-side replay verification, authoritative result storage, rate limiting, payout integration, security review, and legal review. Until then, those capabilities remain hidden or plainly unavailable rather than simulated.

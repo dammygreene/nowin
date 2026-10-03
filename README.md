@@ -2,7 +2,7 @@
 
 **GAMES YOU KNOW. WINS YOU DON'T.**
 
-NOWIN is a colorful browser arcade of six familiar games. Each cabinet has a deterministic NOWIN betrayal: obvious winning play is countered, but a telegraphed, repeatable route remains for players who learn the pattern.
+NOWIN is a colorful browser arcade of six familiar games. Each cabinet has a deterministic NOWIN betrayal: obvious play is countered, but a telegraphed, repeatable route remains for players who learn the pattern.
 
 ## Launch cabinets
 
@@ -26,12 +26,13 @@ npm test
 npm run lint
 npm run typecheck
 npm run build
+npm run preview -- --host 0.0.0.0 --port 4173
 ```
 
-## Data and rewards
+## Production service status
 
-This frontend runs in **DEMO MODE**. Local attempt and win data is stored only in the browser. The Daily Doom seed is a deterministic UTC demo seed until a server challenge endpoint is connected.
+The shipped arcade has no leaderboard, daily challenge, wallet collection, reward claim, or payout service. These surfaces are intentionally hidden or presented as unavailable rather than simulated.
 
-A wallet is never required to play. The reward form is a format-only demo until a production server-side replay verifier, claim-token service, payout integration, rate limits, and legal review are available. No private keys or real payout code are bundled.
+A future production reward system must use an authoritative server-side replay verifier, claim-token endpoint, rate limits, payout integration, deployment-scoped secrets, and legal review. No private keys, wallet addresses, or real payout logic are bundled in this project.
 
-See [`docs/WINNING-GUIDE.md`](./docs/WINNING-GUIDE.md) and [`docs/QA-REPORT.md`](./docs/QA-REPORT.md) for current, evidence-based testing status.
+See [`docs/WINNING-GUIDE.md`](./docs/WINNING-GUIDE.md) and [`docs/QA-REPORT.md`](./docs/QA-REPORT.md) for verification status and known limitations.

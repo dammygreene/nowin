@@ -1,26 +1,24 @@
 # NOWIN — Launch Game Specification
 
-NOWIN launches with exactly six finite, deterministic cabinets: Snake, Flap, Tetris, Cross, Pong, and Tic-Tac-Toe.
+NOWIN’s launch set is exactly six finite cabinets: Snake, Flap, Tetris, Cross, Pong, and Tic-Tac-Toe.
 
-## Shared rules
-- Every run has a seed, finite win condition, local attempt record, instant retry, and authored learnable betrayal.
-- No random death rolls, altered accepted inputs, or impossible physics.
-- Public production builds must not expose developer seed controls.
+## Product rules
 
-## Snake
-Eat 30 apples, then enter the one-way purple exit. At apple 20, the border pulse and gold food signal the late-game route bait.
+- Every cabinet has an authored, deterministic anti-win moment and a finite win condition.
+- The betrayal must be telegraphed and learnable; the game must not silently alter accepted inputs or use random death rolls.
+- A run exists only in active client memory. It is not a player record, ranking, verification artefact, or reward entitlement.
+- Public builds must not expose developer seed controls, shared-seed challenges, client-only leaderboards, or reward claims.
+- A cabinet’s player-facing winning trick may be documented only after it has been reproduced in a real browser. See [`docs/WINNING-GUIDE.md`](./docs/WINNING-GUIDE.md) for the present verification state.
 
-## Flap
-Pass 25 gates, then land on the final platform. The final pink sequence is narrow but uses a fixed rhythm.
+## Cabinet targets
 
-## Tetris
-Clear 20 lines with standard falling-block controls. At 12 lines, a visible purple forced T-piece arrives; keep the centre flat to absorb it.
+| Cabinet | Visible objective |
+| --- | --- |
+| Snake | Eat 30 apples and reach the exit. |
+| Flap | Pass 25 gates and land. |
+| Tetris | Clear 20 lines. |
+| Cross | Reach the finish before NOWIN AI. |
+| Pong | Score seven points before NOWIN AI. |
+| Tic-Tac-Toe | Make three X marks in a row. |
 
-## Cross
-Race NOWIN AI across traffic. The centre lane roadblock at row three is predictable; side-step before it while managing traffic.
-
-## Pong
-First to 7 against NOWIN AI. The AI tracks actively, gains centre-read pressure at four player points, and signals cyan pace at match point.
-
-## Tic-Tac-Toe
-Make three X marks. NOWIN blocks ordinary immediate wins, but its exact `4 → 8 → 2 → 6` bait line opens the other diagonal.
+Design intentions are not browser-play evidence. Real loss/restart/win reproduction remains a release requirement.
