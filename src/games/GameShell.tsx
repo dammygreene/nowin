@@ -12,13 +12,16 @@ export interface ActiveGameProps {
 }
 
 export function GameIntro({ game, onStart }: { game: GameMeta; onStart: () => void }) {
-  return <div className="game-intro"><Mascot mood="smug"/><div><p className="kicker">{game.eyebrow} CABINET</p><h2>{game.title}</h2><p className="intro-line">{game.tagline}</p><p className="control-line">{game.controls}</p><button autoFocus className="arcade-button button--lime" onClick={onStart}>GO <Arrow /></button></div></div>
+  const [count, setCount] = useState<number | null>(null)
+  useEffect(() => { if (count === null) return; if (count === 0) { const timer = window.setTimeout(onStart, 240); return () => window.clearTimeout(timer) } const timer = window.setTimeout(() => setCount(value => (value ?? 1) - 1), 310); return () => window.clearTimeout(timer) }, [count, onStart])
+  if (count !== null) return <div className="countdown" aria-live="assertive"><Mascot mood={count === 0 ? 'celebrate' : 'taunt'}/><p>READY</p><b>{count === 0 ? 'GO!' : count}</b><span>{game.target}</span></div>
+  return <div className="game-intro"><Mascot mood="smug"/><div><p className="kicker">{game.eyebrow} CABINET</p><h2>{game.title}</h2><p className="intro-line">{game.tagline}</p><p className="control-line">{game.controls}</p><button autoFocus className="arcade-button button--lime" onClick={() => setCount(3)}>READY <Arrow /></button></div></div>
 }
 
 export function useRun(gameId: GameId, seed: number, onDone: (result: GameResult) => void) {
   const runId = useMemo(makeRunId, [seed])
   const startedAt = useMemo(() => Date.now(), [runId])
-  return (result: Omit<GameResult, 'gameId' | 'runId' | 'version' | 'seed' | 'startedAt' | 'endedAt'>) => onDone({ ...result, runId, seed, gameId, version: 'arcade-1.0.0', startedAt, endedAt: Date.now() })
+  return (result: Omit<GameResult, 'gameId' | 'runId' | 'version' | 'seed' | 'startedAt' | 'endedAt'>) => onDone({ ...result, runId, seed, gameId, version: 'arcade-2.0.0', startedAt, endedAt: Date.now() })
 }
 
 export function PauseCover({ paused }: { paused: boolean }) { return paused ? <div className="pause-cover"><b>PAUSED</b><span>hit pause to get back in there</span></div> : null }

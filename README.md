@@ -1,17 +1,23 @@
 # NOWIN Arcade
 
-**Games you know. Wins you don't.**
+**GAMES YOU KNOW. WINS YOU DON'T.**
 
-A polished browser arcade of eight familiar games with deterministic, learnable NOWIN anti-win moments. Each cabinet actively counters the obvious winning move, but has a single visible, reproducible blind spot documented in the winning guide. No wallet is required to play; wins use a local mock claim flow unless a future server-side verifier is connected.
+NOWIN is a colorful browser arcade of six familiar games. Each cabinet has a deterministic NOWIN betrayal: obvious winning play is countered, but a telegraphed, repeatable route remains for players who learn the pattern.
 
-## Run locally
+## Launch cabinets
+
+| Solo | VS NOWIN AI |
+| --- | --- |
+| Snake | Cross |
+| Flap | Pong |
+| Tetris | Tic-Tac-Toe |
+
+## Local development
 
 ```bash
 npm install
 npm run dev -- --host 0.0.0.0
 ```
-
-Open `http://localhost:5173`.
 
 ## Quality checks
 
@@ -22,23 +28,10 @@ npm run typecheck
 npm run build
 ```
 
-## Included cabinets
+## Data and rewards
 
-| Solo | VS NOWIN AI |
-| --- | --- |
-| Snake | Cross |
-| Flap | Noughts & Crosses |
-| 2048 | Pong |
-| Mines | Connect Four |
+This frontend runs in **DEMO MODE**. Local attempt and win data is stored only in the browser. The Daily Doom seed is a deterministic UTC demo seed until a server challenge endpoint is connected.
 
-## Product highlights
+A wallet is never required to play. The reward form is a format-only demo until a production server-side replay verifier, claim-token service, payout integration, rate limits, and legal review are available. No private keys or real payout code are bundled.
 
-- Hand-built illustrated arcade lobby, posters, mascot, physical controls, result states, responsive layouts, sound toggle, and reduced-motion support.
-- Seeded game state and normalized input summaries for every completed local run.
-- Local persistence for attempts, wins, scores, and recent run records.
-- Development-only seed switcher; no debug controls are shown in a production build.
-- Mock-only claim provider with base58-shaped Solana wallet validation and idempotent run claims. No treasury, private key, or live payout code is shipped.
-
-## Verification status
-
-See [`WINNING-GUIDE.md`](./WINNING-GUIDE.md) for current game-route and browser-verification status, and [`QA-REPORT.md`](./QA-REPORT.md) for exactly what was tested. A real production prize launch still requires an authoritative server-side run verifier, rate limits, claim-token service, legal review, and full interactive browser/device QA.
+See [`docs/WINNING-GUIDE.md`](./docs/WINNING-GUIDE.md) and [`docs/QA-REPORT.md`](./docs/QA-REPORT.md) for current, evidence-based testing status.

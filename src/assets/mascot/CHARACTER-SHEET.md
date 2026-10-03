@@ -7,6 +7,7 @@ Original character-design reference poses for the NOWIN arcade creature. These a
 | `nowin-front.png` | Front / neutral confident stance | profile, UI reactions, front-facing key art |
 | `nowin-three-quarter.png` | Three-quarter moving pose | game-card art, dialogue and promo placements |
 | `nowin-back.png` | Back view with crown jacket emblem | turnarounds, animation planning, social art |
+| `*-ui.webp` | Optimised UI derivatives | recurring in-app mascot reactions |
 
 ## Character anchors
 
