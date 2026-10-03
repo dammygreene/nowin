@@ -13,7 +13,8 @@
 | `npm run lint` | Passed — zero warnings allowed |
 | `npm run typecheck` | Passed |
 | `npm run build` | Passed — Vite production build |
-| Arena preview-host `curl` smoke request | Passed |
+| `npm run preview -- --host 0.0.0.0 --port 4173` | Passed — production bundle served on port 4173 |
+| Arena preview-host `curl` smoke request | Passed for both development and production preview |
 
 ## Automated coverage
 
