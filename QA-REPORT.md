@@ -9,7 +9,7 @@
 | Command | Result |
 | --- | --- |
 | `npm install` | Passed |
-| `npm test` | Passed — 3 files, 6 tests |
+| `npm test` | Passed — 4 files, 13 tests, including every cabinet’s card → READY → playable-surface flow |
 | `npm run lint` | Passed — zero warnings allowed |
 | `npm run typecheck` | Passed |
 | `npm run build` | Passed — Vite production build |
@@ -22,7 +22,8 @@
 - deterministic RNG and daily demo seed consistency;
 - Solana-address UX format checks;
 - strong AI normal-block and authored Tic-Tac-Toe bait branch;
-- production bundle builds without removed game modules.
+- production bundle builds without removed game modules;
+- each of the six cabinets launches from a full clickable card, completes the READY countdown, and mounts its playable surface.
 
 ## Six-game scope
 
