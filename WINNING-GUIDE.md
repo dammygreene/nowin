@@ -20,7 +20,7 @@
 
 ## Flap
 
-- **Win condition:** pass 25 pipe gates.
+- **Win condition:** fly NOWIN's mascot head through 25 pipe gates.
 - **Betrayal/cue:** after gate 21 the pipe diamond changes pink and the final three gaps shrink to 88 units while alternating higher/lower. Physics are unchanged.
 - **Route:** use short, even flaps to stay near the gap midpoint. At the pink cue, deliberately leave one beat between short taps to reset the old cadence; panic-tapping cannot clear the 88-unit final gaps.
 - **Common loss:** holding the old cadence after the pink diamond starts flashing.
