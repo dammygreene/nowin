@@ -1,29 +1,44 @@
-# NOWIN Arcade — AI Agent Specification Pack
+# NOWIN Arcade
 
-This folder contains the implementation instructions for the NOWIN browser arcade.
+**Games you know. Wins you don't.**
 
-## Files
+A polished browser arcade of eight familiar games with deterministic, learnable NOWIN betrayal moments. No wallet is required to play; wins use a local mock claim flow unless a future server-side verifier is connected.
 
-- `build-prompt.md` — master prompt. Give this to the coding agent first.
-- `docs/product-spec.md` — product behavior and UX.
-- `docs/game-specs.md` — exact game requirements and betrayal mechanics.
-- `docs/tech-architecture.md` — implementation architecture.
-- `docs/anti-cheat-rewards.md` — verified winner and reward system.
-- `docs/qa-test-plan.md` — QA acceptance checklist.
-- `docs/agent-runbook.md` — execution sequence and completion requirements.
-- `docs/brand-spec.md` — NOWIN voice and messaging.
+## Run locally
 
-## Required generated files after build
+```bash
+npm install
+npm run dev -- --host 0.0.0.0
+```
 
-The coding agent must additionally create:
+Open `http://localhost:5173`.
 
-- `docs/WINNING-GUIDE.md`
-- `docs/QA-REPORT.md`
+## Quality checks
 
-These two files must be based on actual implementation and testing.
+```bash
+npm test
+npm run lint
+npm run typecheck
+npm run build
+```
 
-## Suggested agent input
+## Included cabinets
 
-Point the agent at the repository containing this specification pack and give it:
+| Solo | VS NOWIN AI |
+| --- | --- |
+| Snake | Cross |
+| Flap | Noughts & Crosses |
+| 2048 | Pong |
+| Mines | Connect Four |
 
-> Read `build-prompt.md` and all files under `docs/`. Build NOWIN end-to-end according to the specification. Do not stop at scaffolding. Test the finished product, find and reproduce a legitimate win for every game, and write `docs/WINNING-GUIDE.md` and `docs/QA-REPORT.md` from the actual test results.
+## Product highlights
+
+- Hand-built illustrated arcade lobby, posters, mascot, physical controls, result states, responsive layouts, sound toggle, and reduced-motion support.
+- Seeded game state and normalized input summaries for every completed local run.
+- Local persistence for attempts, wins, scores, and recent run records.
+- Development-only seed switcher; no debug controls are shown in a production build.
+- Mock-only claim provider with base58-shaped Solana wallet validation and idempotent run claims. No treasury, private key, or live payout code is shipped.
+
+## Verification status
+
+See [`WINNING-GUIDE.md`](./WINNING-GUIDE.md) for current game-route and browser-verification status, and [`QA-REPORT.md`](./QA-REPORT.md) for exactly what was tested. A real production prize launch still requires an authoritative server-side run verifier, rate limits, claim-token service, legal review, and full interactive browser/device QA.
