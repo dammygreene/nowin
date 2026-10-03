@@ -62,7 +62,7 @@
 ## Pong
 
 - **Win condition:** score seven points before NOWIN.
-- **Betrayal/cue:** at four player points, NOWIN increases its tracking speed and begins reading centre returns. At either six-point score the ball turns cyan and gains a small, visible pace increase. It does not change trajectory without a paddle or wall hit.
+- **Betrayal/cue:** NOWIN's paddle actively tracks the incoming ball and shadows the player's vertical movement between returns. At four player points it increases tracking speed and begins reading centre returns. At either six-point score the ball turns cyan and gains a small, visible pace increase. It does not change trajectory without a paddle or wall hit.
 - **Route:** track the ball rather than camp at centre, return from the upper or lower paddle third to send a sharp angle, and react earlier once the cyan match-point tell appears. Pointer movement and W/S / arrow keys are supported.
 - **Common loss:** feeding the AI predictable centre returns or assuming the normal-speed intercept still works at 6–x.
 - **Browser verification:** **NOT VERIFIED** in this environment.

@@ -35,8 +35,8 @@ The successful production build generated:
 
 - `dist/index.html` — 0.58 kB;
 - Original NOWIN mascot asset — 482.94 kB;
-- CSS bundle — 31.41 kB (7.85 kB gzip);
-- JavaScript bundle — 264.77 kB (82.65 kB gzip).
+- CSS bundle — 31.83 kB (7.95 kB gzip);
+- JavaScript bundle — 265.54 kB (82.92 kB gzip).
 
 `dist/` is ignored and was not committed as source.
 
