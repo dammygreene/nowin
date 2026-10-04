@@ -55,4 +55,28 @@ describe('Flap start behaviour', () => {
     expect(host.textContent).not.toContain('FLAP TO START')
     expect(onFinish).not.toHaveBeenCalled()
   })
+
+  it('uses the same start impulse for pointer and keyboard input', () => {
+    const onStart = vi.fn()
+    act(() => root.render(<FlapGame seed={512} paused={false} onFinish={vi.fn()} setHud={vi.fn()} onStart={onStart}/>))
+
+    const stage = host.querySelector<HTMLElement>('[aria-label="Flap game"]')
+    expect(stage).not.toBeNull()
+    act(() => stage?.dispatchEvent(new Event('pointerdown', { bubbles: true })))
+    advanceFrame(16)
+    const pointerAvatar = host.querySelector<SVGGElement>('.flap-avatar')
+    expect(pointerAvatar?.className.baseVal).toContain('flap-avatar--flap-up')
+    expect(onStart).toHaveBeenCalledTimes(1)
+
+    act(() => root.unmount())
+    host.replaceChildren()
+    root = createRoot(host)
+    const secondStart = vi.fn()
+    act(() => root.render(<FlapGame seed={512} paused={false} onFinish={vi.fn()} setHud={vi.fn()} onStart={secondStart}/>))
+    act(() => window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' })))
+    advanceFrame(16)
+    const keyboardAvatar = host.querySelector<SVGGElement>('.flap-avatar')
+    expect(keyboardAvatar?.className.baseVal).toContain('flap-avatar--flap-up')
+    expect(secondStart).toHaveBeenCalledTimes(1)
+  })
 })

@@ -1,4 +1,4 @@
-# NOWIN QA Test Plan
+# COPECADE QA Test Plan
 
 ## Commands
 

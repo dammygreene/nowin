@@ -1,4 +1,4 @@
-# NOWIN Reward Claims
+# COPECADE Reward Claims
 
 ## Scope
 
@@ -52,12 +52,12 @@ A `PENDING` record is a manual-review queue item, not a reward approval and not 
 
 ## Admin workflow
 
-Set a high-entropy server-only `NOWIN_ADMIN_SECRET` of at least 32 characters; never use a `VITE_` prefix.
+Set a high-entropy server-only `COPECADE_ADMIN_SECRET` of at least 32 characters; never use a `VITE_` prefix.
 
 All admin calls require this request header:
 
 ```text
-Authorization: Bearer <NOWIN_ADMIN_SECRET>
+Authorization: Bearer <COPECADE_ADMIN_SECRET>
 ```
 
 ### Export

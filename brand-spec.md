@@ -1,8 +1,8 @@
-# NOWIN — Brand and Voice Specification
+# COPECADE — Brand and Voice Specification
 
 ## Name
 
-NOWIN
+COPECADE
 
 ## Core line
 
@@ -20,7 +20,7 @@ Use sparingly:
 
 ## Voice
 
-NOWIN talks like a smug arcade operator: short, deadpan, mischievous, and never corporate. It must not over-explain the joke or invent social proof, player records, payouts, partnerships, or platform metrics.
+COPECADE talks like a smug arcade operator: short, deadpan, mischievous, and never corporate. It must not over-explain the joke or invent social proof, player records, payouts, partnerships, or platform metrics.
 
 ## Result copy
 

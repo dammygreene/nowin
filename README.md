@@ -1,12 +1,12 @@
-# NOWIN Arcade
+# COPECADE Arcade
 
 **GAMES YOU KNOW. WINS YOU DON'T.**
 
-NOWIN is a browser arcade of six familiar games. Each cabinet has a deterministic NOWIN betrayal: obvious play is countered, but a repeatable route remains for players who learn the pattern.
+COPECADE is a browser arcade of six familiar games. Each cabinet has a deterministic COPECADE betrayal: obvious play is countered, but a repeatable route remains for players who learn the pattern.
 
 ## Launch cabinets
 
-| Solo | VS NOWIN AI |
+| Solo | VS COPECADE AI |
 | --- | --- |
 | Snake | Cross |
 | Flap | Pong |
@@ -40,12 +40,12 @@ Configure these server-only variables in Vercel and in `.env.local` for local Ve
 
 ```dotenv
 BLOB_READ_WRITE_TOKEN=
-NOWIN_ADMIN_SECRET=
+COPECADE_ADMIN_SECRET=
 ```
 
-Create/connect the Blob store with **private access**. Set `NOWIN_ADMIN_SECRET` to a high-entropy value of at least 32 characters. Do not use a `VITE_` prefix for either variable and do not commit real values. Claim records are initially `PENDING` with `PENDING_REVIEW` verification because this build has no server-side game replay verifier. A pending claim is neither approved nor paid.
+Create/connect the Blob store with **private access**. Set `COPECADE_ADMIN_SECRET` to a high-entropy value of at least 32 characters. Do not use a `VITE_` prefix for either variable and do not commit real values. Claim records are initially `PENDING` with `PENDING_REVIEW` verification because this build has no server-side game replay verifier. A pending claim is neither approved nor paid.
 
-The administrator-only endpoints require `Authorization: Bearer <NOWIN_ADMIN_SECRET>`:
+The administrator-only endpoints require `Authorization: Bearer <COPECADE_ADMIN_SECRET>`:
 
 - `GET /api/admin/export` — generates, privately stores, and downloads `nowin-winners.csv`.
 - `PATCH /api/admin/claims` — updates only `status`, `reviewed_at`, `tx_signature`, and `notes` for an existing record. Statuses are `PENDING`, `PAID`, and `REJECTED`.

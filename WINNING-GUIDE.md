@@ -1,4 +1,4 @@
-# NOWIN Winning Guide
+# COPECADE Winning Guide
 
 The canonical win-verification record is [`docs/WINNING-GUIDE.md`](./docs/WINNING-GUIDE.md).
 

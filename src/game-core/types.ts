@@ -18,7 +18,7 @@ export interface GameResult {
 export interface GameMeta {
   id: GameId
   title: string
-  eyebrow: 'SOLO' | 'VS NOWIN AI'
+  eyebrow: 'SOLO' | 'VS COPECADE AI'
   tagline: string
   controls: string
   color: string
@@ -31,9 +31,9 @@ export const GAMES: GameMeta[] = [
   { id: 'snake', title: 'SNAKE', eyebrow: 'SOLO', tagline: 'eat 30. then escape.', controls: 'ARROWS / WASD', color: '#8be36b', accent: '#2c9d68', target: '30 APPLES + EXIT', className: 'snake' },
   { id: 'flap', title: 'FLAP', eyebrow: 'SOLO', tagline: 'just fly. apparently.', controls: 'SPACE / TAP', color: '#ffd84a', accent: '#f58d45', target: '25 GATES + LAND', className: 'flap' },
   { id: 'tetris', title: 'TETRIS', eyebrow: 'SOLO', tagline: 'clear 20. good luck.', controls: 'ARROWS / SPACE', color: '#b791ff', accent: '#673bb7', target: '20 LINES', className: 'tetris' },
-  { id: 'cross', title: 'CROSS', eyebrow: 'VS NOWIN AI', tagline: 'race NOWIN home.', controls: 'ARROWS / WASD', color: '#ff8a4c', accent: '#d83d69', target: 'BEAT NOWIN', className: 'cross' },
-  { id: 'pong', title: 'PONG', eyebrow: 'VS NOWIN AI', tagline: 'first to seven.', controls: 'W / S OR POINTER', color: '#69e9df', accent: '#188f91', target: 'FIRST TO 7', className: 'pong' },
-  { id: 'tictactoe', title: 'TIC-TAC-TOE', eyebrow: 'VS NOWIN AI', tagline: 'it sees the obvious.', controls: 'CLICK A CELL', color: '#f4a6dc', accent: '#a64c9c', target: 'THREE IN A ROW', className: 'tictactoe' }
+  { id: 'cross', title: 'CROSS', eyebrow: 'VS COPECADE AI', tagline: 'race COPECADE home.', controls: 'ARROWS / WASD', color: '#ff8a4c', accent: '#d83d69', target: 'BEAT COPECADE', className: 'cross' },
+  { id: 'pong', title: 'PONG', eyebrow: 'VS COPECADE AI', tagline: 'first to seven.', controls: 'W / S OR POINTER', color: '#69e9df', accent: '#188f91', target: 'FIRST TO 7', className: 'pong' },
+  { id: 'tictactoe', title: 'TIC-TAC-TOE', eyebrow: 'VS COPECADE AI', tagline: 'it sees the obvious.', controls: 'CLICK A CELL', color: '#f4a6dc', accent: '#a64c9c', target: 'THREE IN A ROW', className: 'tictactoe' }
 ]
 
 export const getGame = (id: string) => GAMES.find(game => game.id === id) ?? GAMES[0]

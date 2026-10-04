@@ -282,7 +282,7 @@ export function hasBlobCredentials(environment: NodeJS.ProcessEnv = process.env)
 }
 
 export function validAdminSecret(request: Request, environment: NodeJS.ProcessEnv = process.env): boolean {
-  const expected = environment.NOWIN_ADMIN_SECRET
+  const expected = environment.COPECADE_ADMIN_SECRET
   const authorization = request.headers.get('authorization')
   if (!expected || expected.length < 32 || !authorization?.startsWith('Bearer ')) return false
   const provided = authorization.slice('Bearer '.length)

@@ -1,4 +1,4 @@
-# NOWIN Arcade — Technical Architecture
+# COPECADE Arcade — Technical Architecture
 
 ## Shipped stack
 
@@ -34,13 +34,13 @@ The record path is `nowin-claims/records/<claim-id>.json`; the derived export pa
 
 ### Admin API
 
-`GET /api/admin/export` and `PATCH /api/admin/claims` require a timing-safe comparison with the server-only `NOWIN_ADMIN_SECRET` from an `Authorization: Bearer` header. They are not called by the browser UI.
+`GET /api/admin/export` and `PATCH /api/admin/claims` require a timing-safe comparison with the server-only `COPECADE_ADMIN_SECRET` from an `Authorization: Bearer` header. They are not called by the browser UI.
 
 The update route changes only `status`, `reviewed_at`, `tx_signature`, and `notes`; it cannot mutate a wallet or game result. Export reads private records, safely generates CSV, writes the private derived CSV, and streams a download only to an authenticated administrator.
 
 ## Security boundary
 
-The client never receives `BLOB_READ_WRITE_TOKEN` or `NOWIN_ADMIN_SECRET`; neither may use a `VITE_` prefix. There are no private keys, signing credentials, wallet connections, client transaction signing, treasury integrations, or automatic payouts.
+The client never receives `BLOB_READ_WRITE_TOKEN` or `COPECADE_ADMIN_SECRET`; neither may use a `VITE_` prefix. There are no private keys, signing credentials, wallet connections, client transaction signing, treasury integrations, or automatic payouts.
 
 A pending submission is not proof of a legitimate win. Before claims can be marked automatically eligible, add server-issued run identities, normalized input capture, deterministic server replay verification, durable distributed rate limiting, abuse monitoring, and security/legal review.
 

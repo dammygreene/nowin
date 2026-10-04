@@ -5,7 +5,7 @@ import type { ActiveGameProps } from './GameShell'
 
 // A logical, portrait playfield keeps the same game geometry at every CSS size.
 // The figures deliberately follow the familiar 288 × 512 arcade composition,
-// while the art and the sabotage are original NOWIN work.
+// while the art and the sabotage are original COPECADE work.
 const WIDTH = 288
 const HEIGHT = 512
 const GROUND_Y = 400
@@ -163,7 +163,7 @@ function Skyline({ scroll }: { scroll: number }) {
 }
 
 function FinishPlatform({ x }: { x: number }) {
-  return <g transform={`translate(${x} ${FINISH_TOP})`} className="flap-finish-platform"><rect x="0" y="0" width={FINISH_WIDTH} height="16" rx="6" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><path d="M10 0v-20h14l8 8 8-8h14v20" fill="#ffe45c" stroke="#172337" strokeWidth="3"/><text x="51" y="11" textAnchor="middle" fontSize="6" fontWeight="900" fill="#172337">NOWIN</text></g>
+  return <g transform={`translate(${x} ${FINISH_TOP})`} className="flap-finish-platform"><rect x="0" y="0" width={FINISH_WIDTH} height="16" rx="6" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><path d="M10 0v-20h14l8 8 8-8h14v20" fill="#ffe45c" stroke="#172337" strokeWidth="3"/><text x="51" y="11" textAnchor="middle" fontSize="6" fontWeight="900" fill="#172337">COPECADE</text></g>
 }
 
 function MascotFlyer({ y, velocity, phase, elapsed, phaseElapsed }: Pick<FlapState, 'y' | 'velocity' | 'phase' | 'elapsed' | 'phaseElapsed'>) {
@@ -380,7 +380,7 @@ export function FlapGame({ seed, onFinish, setHud, paused, onStart, autoStart = 
   const telegraphGate = view.gates.find(gate => gate.sabotage === 'telegraph' || gate.sabotage === 'moving')
   useEffect(() => {
     if (view.phase === 'ready') setHud('TAP TO FLY')
-    else if (view.finishX !== null) setHud('LAND ON THE NOWIN DOCK')
+    else if (view.finishX !== null) setHud('LAND ON THE COPECADE DOCK')
     else setHud(`${view.score}/${TOTAL} GATES`)
   }, [setHud, view.finishX, view.phase, view.score])
 
@@ -405,7 +405,7 @@ export function FlapGame({ seed, onFinish, setHud, paused, onStart, autoStart = 
         <rect y={GROUND_Y} width={WIDTH} height="12" fill="#83d65b" stroke="#172337" strokeWidth="3"/>
         <path d={`M${-(view.scroll % 30)} ${GROUND_Y + 35}h${WIDTH + 30}M${-(view.scroll % 30)} ${GROUND_Y + 76}h${WIDTH + 30}`} stroke="#d39f48" strokeWidth="3" strokeDasharray="8 7" opacity=".72"/>
         {view.phase !== 'ready' && <text x={WIDTH / 2} y="69" textAnchor="middle" fontSize="46" fontWeight="900" fill="#fff8e8" stroke="#172337" strokeWidth="3" paintOrder="stroke">{view.score}</text>}
-        {promptVisible && <g className="flap-start-prompt" pointerEvents="none" transform="translate(77 112)"><rect x="0" y="0" width="134" height="46" rx="8" fill="#fff8e8" stroke="#172337" strokeWidth="3"/><text x="67" y="17" textAnchor="middle" fontSize="10" fontWeight="900" fill="#172337">READY?</text><path d="M24 31l8-7v5h10v4H32v5z" fill="#ff4fa3" stroke="#172337" strokeWidth="1.5"/><text x="85" y="35" textAnchor="middle" fontSize="9" fontWeight="900" fill="#172337">FLAP TO START</text></g>}
+        {promptVisible && <g className="flap-start-prompt" pointerEvents="none" transform="translate(62 106)"><rect x="0" y="0" width="164" height="58" rx="8" fill="#fff8e8" stroke="#172337" strokeWidth="3"/><text x="82" y="17" textAnchor="middle" fontSize="10" fontWeight="900" fill="#172337">READY?</text><path d="M22 35l8-7v5h10v4H30v5z" fill="#ff4fa3" stroke="#172337" strokeWidth="1.5"/><text x="94" y="35" textAnchor="middle" fontSize="8" fontWeight="900" fill="#172337">TAP / CLICK / SPACE</text><text x="82" y="49" textAnchor="middle" fontSize="8" fontWeight="900" fill="#172337">FLAP TO START</text></g>}
         {telegraphGate && <g className="flap-warning" transform="translate(70 21)"><rect width="148" height="28" rx="7" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><text x="74" y="19" textAnchor="middle" fontSize="10" fontWeight="900" fill="#172337">PIPE SHIFT {telegraphGate.direction === 1 ? '↓' : '↑'}</text></g>}
       </svg>
     </div>

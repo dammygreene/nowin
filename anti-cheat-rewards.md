@@ -1,6 +1,6 @@
-# NOWIN Reward Safety
+# COPECADE Reward Safety
 
-NOWIN’s browser client can submit a manual-review claim only after its UI reports a win. It does not connect a wallet, ask for a signature, send a payment, expose a treasury, or treat a client score as an approved reward.
+COPECADE’s browser client can submit a manual-review claim only after its UI reports a win. It does not connect a wallet, ask for a signature, send a payment, expose a treasury, or treat a client score as an approved reward.
 
 ## Present verification status
 
@@ -13,6 +13,6 @@ A future authoritative flow must:
 3. Issue a short-lived, single-use claim token only for a valid, unclaimed run.
 4. Request a wallet only after successful verification, then create an idempotent manual-review or payout request.
 
-The currently implemented manual-review records are private Vercel Blob objects keyed idempotently by run ID. Admin-only CSV export and status updates require a server-side `NOWIN_ADMIN_SECRET`.
+The currently implemented manual-review records are private Vercel Blob objects keyed idempotently by run ID. Admin-only CSV export and status updates require a server-side `COPECADE_ADMIN_SECRET`.
 
 Do not ship treasury keys, signing credentials, payout secrets, or authoritative reward logic to the browser. Complete security and legal/compliance review before changing a pending claim into a paid reward.

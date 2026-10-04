@@ -1,10 +1,10 @@
-# NOWIN Product Specification
+# COPECADE Product Specification
 
 ## Thesis
 
 **GAMES YOU KNOW. WINS YOU DON'T.**
 
-NOWIN is a colorful browser arcade of six familiar games with authored, deterministic anti-win moments. Players learn the betrayal and eventually beat it.
+COPECADE is a colorful browser arcade of six familiar games with authored, deterministic anti-win moments. Players learn the betrayal and eventually beat it.
 
 ## Information architecture
 

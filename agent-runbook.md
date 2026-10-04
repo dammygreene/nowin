@@ -1,4 +1,4 @@
-# NOWIN Build Runbook
+# COPECADE Build Runbook
 
 1. Maintain exactly six launch cabinets: Snake, Flap, Tetris, Cross, Pong, Tic-Tac-Toe.
 2. Keep every betrayal deterministic, telegraphed, and beatable.

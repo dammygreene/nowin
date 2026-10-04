@@ -1,6 +1,6 @@
-# NOWIN — Launch Game Specification
+# COPECADE — Launch Game Specification
 
-NOWIN’s launch set is exactly six finite cabinets: Snake, Flap, Tetris, Cross, Pong, and Tic-Tac-Toe.
+COPECADE’s launch set is exactly six finite cabinets: Snake, Flap, Tetris, Cross, Pong, and Tic-Tac-Toe.
 
 ## Product rules
 
@@ -17,8 +17,8 @@ NOWIN’s launch set is exactly six finite cabinets: Snake, Flap, Tetris, Cross,
 | Snake | Eat 30 apples and reach the exit. |
 | Flap | Pass 25 gates and land on the finish platform. |
 | Tetris | Clear 20 lines. |
-| Cross | Reach the finish before NOWIN AI. |
-| Pong | Score seven points before NOWIN AI. |
+| Cross | Reach the finish before COPECADE AI. |
+| Pong | Score seven points before COPECADE AI. |
 | Tic-Tac-Toe | Make three X marks in a row. |
 
 Design intentions are not browser-play evidence. Real loss/restart/win reproduction remains a release requirement.

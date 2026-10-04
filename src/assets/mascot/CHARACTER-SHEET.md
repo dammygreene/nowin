@@ -1,6 +1,6 @@
-# NOWIN Mascot Turnaround Assets
+# COPECADE Mascot Turnaround Assets
 
-Original character-design reference poses for the NOWIN arcade creature. These are source artwork assets, separate from the cropped in-app hero file (`nowin-mascot.png`).
+Original character-design reference poses for the COPECADE arcade creature. These are source artwork assets, separate from the cropped in-app hero file (`nowin-mascot.png`).
 
 | File | View | Intended use |
 | --- | --- | --- |

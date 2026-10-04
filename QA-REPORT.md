@@ -1,4 +1,4 @@
-# NOWIN QA Report
+# COPECADE QA Report
 
 The canonical audit is maintained at [`docs/QA-REPORT.md`](./docs/QA-REPORT.md).
 

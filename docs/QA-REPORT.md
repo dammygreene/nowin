@@ -1,10 +1,10 @@
-# NOWIN Final Production Audit + Reward-Claim QA
+# COPECADE Final Production Audit + Reward-Claim QA
 
 **Audit date:** 2026-10-03
 
 **Build examined:** local branch `arena/01a1014e-nowin`
 
-**Result:** automated claim/API checks and production client build pass. Real Vercel Blob persistence, real-browser gameplay, and real browser claim flow remain **unverified**.
+**Result:** automated claim/API checks and production client build pass. Tic-Tac-Toe has one local-browser gameplay verification; real Vercel Blob persistence, deployed replay verification, and the other cabinets' gameplay remain **unverified**.
 
 This report separates tests actually run from deployment-time checks still blocked by unavailable credentials/browser tooling. It does not treat an in-memory test double, static HTTP request, or client result object as durable production evidence.
 
@@ -30,7 +30,7 @@ The runtime-source audit found no references to retired launch games (Minesweepe
 | Tetris | Not observed — interactive browser unavailable. | 0 |
 | Cross | Not observed — interactive browser unavailable. | 0 |
 | Pong | Not observed — interactive browser unavailable. | 0 |
-| Tic-Tac-Toe | Not observed — interactive browser unavailable. | 0 |
+| Tic-Tac-Toe | Center → bottom-right → top-right → bottom-left; COPECADE's deterministic bait response is middle-left. | 1 |
 
 No source-derived route is presented as gameplay evidence. See [`WINNING-GUIDE.md`](./WINNING-GUIDE.md) for the required follow-up protocol.
 
@@ -38,13 +38,13 @@ No source-derived route is presented as gameplay evidence. See [`WINNING-GUIDE.m
 
 Implemented production-facing components:
 
-- Post-win NOWIN-styled claim panel: Solana wallet input, `SUBMIT CLAIM`, exact error states, and `CLAIM RECEIVED` only after a successful API response.
+- Post-win COPECADE-styled claim panel: Solana wallet input, `SUBMIT CLAIM`, exact error states, and `CLAIM RECEIVED` only after a successful API response.
 - `POST /api/claims`: server-side JSON/payload validation, official `@solana/addresses` public-key validation, per-instance IP/client rate limiting, and deterministic run-ID idempotency.
 - Private Vercel Blob record design: `nowin-claims/records/<claim-id>.json` with overwrite disabled.
 - `GET /api/admin/export`: server-secret-protected private CSV generation and download; writes `nowin-claims/exports/nowin-winners.csv` privately.
 - `PATCH /api/admin/claims`: server-secret-protected manual update of only `status`, `reviewed_at`, `tx_signature`, and `notes`.
 - CSV quote/comma/newline escaping plus spreadsheet-formula neutralization.
-- `.env.example` with placeholders only for `BLOB_READ_WRITE_TOKEN` and `NOWIN_ADMIN_SECRET`.
+- `.env.example` with placeholders only for `BLOB_READ_WRITE_TOKEN` and `COPECADE_ADMIN_SECRET`.
 
 The server has **no replay verifier**. `verifyWinningRun` is a deliberately isolated interface that presently returns `PENDING_REVIEW`; saved claims have `status: PENDING` and are not verified, approved, or paid. The claim system does not silently trust a client win as reward eligibility.
 
@@ -82,11 +82,11 @@ After `npm install`, the following completed successfully:
 
 `npm audit` completed with **0 vulnerabilities** after the final dependency set was installed.
 
-## 8. Browser, mobile, console, and network QA — not performed
+## 8. Browser, mobile, console, and network QA
 
-No Chromium, Chrome, or Chromium-browser executable is installed in this environment. An attempted `npx --yes playwright install chromium` failed after repeated CDN TLS connection resets, so an actual browser could not be provisioned.
+The integrated browser was used against the local Vite build on 2026-10-04. Tic-Tac-Toe was played through the complete winning route once at desktop and the board was checked at 390x844.
 
-Consequently, no actual desktop rendering at 1280×800/1440×900, mobile rendering at 390×844/430×932, gameplay, result interaction, console inspection, browser network inspection, or claim UI submission was performed.
+The desktop run reached the real `YOU WON` result and reward panel. The mobile board measured 358.8×358.8 pixels and remained square and tappable. Other viewport sizes, console/network inspection, wallet submission, deployed API behavior, and the other five games remain unperformed.
 
 A non-browser production-preview smoke check previously returned HTTP 200 for the static Vite entry and bundled JS/CSS/image assets. This confirms static serving only. Vite preview does not execute Vercel Functions and cannot verify `/api/*` routes.
 
@@ -103,7 +103,7 @@ A non-browser production-preview smoke check previously returned HTTP 200 for th
 
 ## 10. Known limitations / deployment blockers
 
-1. All six games have zero observed browser fresh-run wins; the target of three independent wins per game is incomplete.
+1. Tic-Tac-Toe has one observed local-browser fresh-run win; the target of three independent wins and all other cabinets' gameplay verification remain incomplete.
 2. There is no server-side replay verifier. Claims are manual-review intake only and must not be described as verified rewards or payments.
 3. Private Blob storage is implemented in code but not configured/tested with real credentials in this environment.
 4. Real browser desktop/mobile QA, console/network inspection, and claim UI interaction remain unperformed.
