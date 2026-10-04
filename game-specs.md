@@ -15,7 +15,7 @@ NOWIN’s launch set is exactly six finite cabinets: Snake, Flap, Tetris, Cross,
 | Cabinet | Visible objective |
 | --- | --- |
 | Snake | Eat 30 apples and reach the exit. |
-| Flap | Pass 25 gates. |
+| Flap | Pass 25 gates and land on the finish platform. |
 | Tetris | Clear 20 lines. |
 | Cross | Reach the finish before NOWIN AI. |
 | Pong | Score seven points before NOWIN AI. |

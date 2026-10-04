@@ -29,7 +29,7 @@ export interface GameMeta {
 
 export const GAMES: GameMeta[] = [
   { id: 'snake', title: 'SNAKE', eyebrow: 'SOLO', tagline: 'eat 30. then escape.', controls: 'ARROWS / WASD', color: '#8be36b', accent: '#2c9d68', target: '30 APPLES + EXIT', className: 'snake' },
-  { id: 'flap', title: 'FLAP', eyebrow: 'SOLO', tagline: 'just fly. apparently.', controls: 'SPACE / TAP', color: '#ffd84a', accent: '#f58d45', target: '25 GATES', className: 'flap' },
+  { id: 'flap', title: 'FLAP', eyebrow: 'SOLO', tagline: 'just fly. apparently.', controls: 'SPACE / TAP', color: '#ffd84a', accent: '#f58d45', target: '25 GATES + LAND', className: 'flap' },
   { id: 'tetris', title: 'TETRIS', eyebrow: 'SOLO', tagline: 'clear 20. good luck.', controls: 'ARROWS / SPACE', color: '#b791ff', accent: '#673bb7', target: '20 LINES', className: 'tetris' },
   { id: 'cross', title: 'CROSS', eyebrow: 'VS NOWIN AI', tagline: 'race NOWIN home.', controls: 'ARROWS / WASD', color: '#ff8a4c', accent: '#d83d69', target: 'BEAT NOWIN', className: 'cross' },
   { id: 'pong', title: 'PONG', eyebrow: 'VS NOWIN AI', tagline: 'first to seven.', controls: 'W / S OR POINTER', color: '#69e9df', accent: '#188f91', target: 'FIRST TO 7', className: 'pong' },

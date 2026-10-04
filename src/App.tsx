@@ -52,17 +52,59 @@ const GameComponent = ({ id, ...props }: ActiveGameProps & { id: GameId }) => {
   return <TicTacToeGame {...props}/>
 }
 
-function GameSession({ game, seed, paused, setHud, onDone }: { game: GameMeta; seed: number; paused: boolean; setHud: (text: string) => void; onDone: (result: GameResult) => void }) {
-  const finish = useRun(game.id, seed, onDone)
-  return <GameComponent id={game.id} key={`${game.id}-${seed}`} seed={seed} paused={paused} setHud={setHud} onFinish={finish}/>
+function GameSession({ game, seed, paused, setHud, onDone, onSessionStart, autoStart }: { game: GameMeta; seed: number; paused: boolean; setHud: (text: string) => void; onDone: (result: GameResult) => void; onSessionStart?: () => void; autoStart?: boolean }) {
+  const { finish, markStarted } = useRun(game.id, seed, onDone)
+  const start = () => { markStarted(); onSessionStart?.() }
+  return <GameComponent id={game.id} key={`${game.id}-${seed}`} seed={seed} paused={paused} setHud={setHud} onFinish={finish} onStart={onSessionStart ? start : undefined} autoStart={autoStart}/>
 }
 
 function GamePage({ id }: { id: string }) {
-  const game = getGame(id); const [started, setStarted] = useState(false); const [paused, setPaused] = useState(false); const [hud, setHud] = useState(game.target); const [seed, setSeed] = useState(newRunSeed); const [result, setResult] = useState<GameResult | null>(null); const [attemptNumber, setAttemptNumber] = useState(0)
-  useEffect(() => { setStarted(false); setPaused(false); setHud(game.target); setSeed(newRunSeed()); setResult(null); setAttemptNumber(0) }, [game.id])
-  const begin = () => { audio.play('start'); setStarted(true); setPaused(false); setResult(null); setAttemptNumber(value => value + 1) }
+  const game = getGame(id)
+  const isFlap = game.id === 'flap'
+  const [started, setStarted] = useState(false)
+  const [paused, setPaused] = useState(false)
+  const [hud, setHud] = useState(game.target)
+  const [seed, setSeed] = useState(newRunSeed)
+  const [result, setResult] = useState<GameResult | null>(null)
+  const [attemptNumber, setAttemptNumber] = useState(0)
+  const [autoStartFlap, setAutoStartFlap] = useState(false)
+
+  useEffect(() => {
+    setStarted(false)
+    setPaused(false)
+    setHud(game.target)
+    setSeed(newRunSeed())
+    setResult(null)
+    setAttemptNumber(0)
+    setAutoStartFlap(false)
+  }, [game.id])
+
+  const begin = () => {
+    audio.play('start')
+    setStarted(true)
+    setPaused(false)
+    setResult(null)
+    setAttemptNumber(value => value + 1)
+  }
+  const beginFlapRun = () => {
+    audio.play('start')
+    setStarted(true)
+    setPaused(false)
+    setAutoStartFlap(false)
+    setAttemptNumber(value => value + 1)
+  }
+  const retryFlap = () => {
+    setSeed(newRunSeed())
+    setStarted(false)
+    setPaused(false)
+    setResult(null)
+    setAutoStartFlap(true)
+  }
   const done = (run: GameResult) => { setResult(run); setPaused(true) }
-  return <main className={`play-page play-page--${game.className} page-enter`}><div className="play-top"><button className="back-button" onClick={() => go('/')}><Arrow direction="left"/> <span>ARCADE</span></button><div className="cabinet-title"><p>{game.eyebrow}</p><h1>{game.title}</h1></div><div className="hud-readout"><b>{hud}</b><span>PLAY FAIR. PROVE IT.</span></div><button className="pause-button" onClick={() => setPaused(value => !value)} disabled={!started || !!result}>{paused && !result ? 'RESUME' : 'PAUSE'}</button></div><section className="game-cabinet cabinet-enter"><div className="cabinet-top"><div className="status-light"/><span>{started ? 'LIVE RUN · ANTI-WIN ENGINE ARMED' : 'INSERT COURAGE'}</span><span className="cabinet-controls">{game.controls}</span></div><div className={`game-area game-area--${game.className}`}><div className="game-area-art" aria-hidden="true"><GameArt game={game.id} large/></div><div className="game-area-content">{!started && <GameIntro game={game} onStart={begin}/>} {started && !result && <GameSession game={game} seed={seed} paused={paused} setHud={setHud} onDone={done}/>}</div><PauseCover paused={paused && !result}/>{result && <ResultScreen result={result} game={game} attemptNumber={attemptNumber} onRetry={begin} onLeave={() => go('/')}/>}</div><div className="cabinet-bottom"><span>NOWIN SYSTEMS © 2026</span><span>PLAY FAIR. PROVE IT.</span></div></section></main>
+  const sessionVisible = started || isFlap
+  const cabinetStatus = started ? 'LIVE RUN · ANTI-WIN ENGINE ARMED' : isFlap ? 'READY · TAP TO FLAP' : 'INSERT COURAGE'
+
+  return <main className={`play-page play-page--${game.className} page-enter`}><div className="play-top"><button className="back-button" onClick={() => go('/')}><Arrow direction="left"/> <span>ARCADE</span></button><div className="cabinet-title"><p>{game.eyebrow}</p><h1>{game.title}</h1></div><div className="hud-readout"><b>{hud}</b><span>PLAY FAIR. PROVE IT.</span></div><button className="pause-button" onClick={() => setPaused(value => !value)} disabled={!started || !!result}>{paused && !result ? 'RESUME' : 'PAUSE'}</button></div><section className="game-cabinet cabinet-enter"><div className="cabinet-top"><div className="status-light"/><span>{cabinetStatus}</span><span className="cabinet-controls">{game.controls}</span></div><div className={`game-area game-area--${game.className}`}><div className="game-area-art" aria-hidden="true"><GameArt game={game.id} large/></div><div className="game-area-content">{!started && !isFlap && <GameIntro game={game} onStart={begin}/>} {sessionVisible && !result && <GameSession game={game} seed={seed} paused={paused} setHud={setHud} onDone={done} onSessionStart={isFlap ? beginFlapRun : undefined} autoStart={isFlap ? autoStartFlap : undefined}/>}</div><PauseCover paused={paused && !result}/>{result && <ResultScreen result={result} game={game} attemptNumber={attemptNumber} onRetry={isFlap ? retryFlap : begin} onLeave={() => go('/')}/>}</div><div className="cabinet-bottom"><span>NOWIN SYSTEMS © 2026</span><span>PLAY FAIR. PROVE IT.</span></div></section></main>
 }
 
 export default function App() {

@@ -24,3 +24,24 @@
 /* Touch-first cabinet: keyboard-only hints never occupy the mobile HUD. */
 @media(max-width:560px){.cabinet-controls,.control-line{display:none}.cabinet-top{justify-content:center}.cabinet-top .status-light{margin-right:2px}}
 @media(max-width:560px){.claim-panel{padding:11px}.claim-panel h3{font-size:29px}.claim-panel input{font-size:11px;padding:10px 8px}}
+
+/* FLAP uses its own focused, portrait cabinet. Gameplay movement is rendered by
+   the simulation each frame: no CSS transition may lag a visible pipe behind
+   the collision geometry. */
+.play-page--flap{padding-top:12px;padding-bottom:18px}
+.play-page--flap .play-top{max-width:720px;margin-bottom:8px}
+.play-page--flap .game-cabinet{max-width:720px}
+.play-page--flap .game-area{min-height:calc(100svh - 188px);padding:10px;background:#61cfe3}
+.play-page--flap .game-area-art{display:none}
+.flap-game{width:min(94vw,440px,calc(56.25svh - 132px))}
+.flap-stage{touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}
+.flap-stage svg{width:100%;height:auto;vertical-align:top}
+.flap-pipe rect,.flap-pipe path{transition:none}
+.flap-pipe--shifting rect{filter:saturate(1.25) brightness(1.08)}
+.flap-pipe--shifting{animation:flap-pipe-alert .16s steps(2,end) infinite}
+.flap-start-prompt{animation:flap-prompt-pulse .85s ease-in-out infinite}
+.flap-avatar--flap-up path,.flap-avatar--flap-down path{filter:saturate(1.12)}
+.flap-finish-platform{filter:drop-shadow(2px 3px 0 #17233755)}
+@keyframes flap-pipe-alert{50%{filter:brightness(1.1)}}
+@keyframes flap-prompt-pulse{50%{opacity:.72}}
+@media(max-width:560px){.play-page--flap{padding-top:8px;padding-bottom:12px}.play-page--flap .play-top{margin-bottom:5px}.play-page--flap .game-area{min-height:calc(100svh - 205px);padding:5px}.flap-game{width:min(96vw,calc(56.25svh - 130px))}.flap-game .game-tip{min-height:24px;margin:0 auto 6px;font-size:8px}}

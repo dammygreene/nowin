@@ -62,7 +62,6 @@ describe('arcade play flow', () => {
 
   it.each([
     ['snake', 'Snake game'],
-    ['flap', 'Flap game'],
     ['tetris', 'Falling block game'],
     ['cross', 'Crossing game'],
     ['pong', 'Pong game'],
@@ -78,5 +77,16 @@ describe('arcade play flow', () => {
     act(() => vi.advanceTimersByTime(320))
     act(() => vi.advanceTimersByTime(260))
     expect(host.querySelector(`[aria-label="${gameLabel}"]`)).not.toBeNull()
+  })
+
+  it('opens Flap directly in its idle tap-to-start state', () => {
+    window.location.hash = '#/play/flap'
+    act(() => root.render(<App />))
+    const stage = host.querySelector<HTMLElement>('[aria-label="Flap game"]')
+    expect(stage).not.toBeNull()
+    expect(host.textContent).toContain('FLAP TO START')
+    expect([...host.querySelectorAll('button')].some(button => button.textContent?.includes('READY'))).toBe(false)
+    act(() => stage?.dispatchEvent(new Event('pointerdown', { bubbles: true })))
+    expect(host.textContent).not.toContain('FLAP TO START')
   })
 })

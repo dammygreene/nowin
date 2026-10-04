@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Mascot } from '../components/Mascot'
 import { Arrow } from '../components/Arrow'
 import type { GameId, GameMeta, GameResult } from '../game-core/types'
@@ -9,6 +9,10 @@ export interface ActiveGameProps {
   onFinish: (result: Omit<GameResult, 'gameId' | 'runId' | 'version' | 'seed' | 'startedAt' | 'endedAt'>) => void
   setHud: (value: string) => void
   paused: boolean
+  /** Called by games, such as Flap, whose physical run begins after their screen is mounted. */
+  onStart?: () => void
+  /** Lets the retry button count as the opening flap without adding a second tap. */
+  autoStart?: boolean
 }
 
 export function GameIntro({ game, onStart }: { game: GameMeta; onStart: () => void }) {
@@ -20,8 +24,10 @@ export function GameIntro({ game, onStart }: { game: GameMeta; onStart: () => vo
 
 export function useRun(gameId: GameId, seed: number, onDone: (result: GameResult) => void) {
   const runId = useMemo(makeRunId, [seed])
-  const startedAt = useMemo(() => Date.now(), [runId])
-  return (result: Omit<GameResult, 'gameId' | 'runId' | 'version' | 'seed' | 'startedAt' | 'endedAt'>) => onDone({ ...result, runId, seed, gameId, version: 'arcade-2.0.0', startedAt, endedAt: Date.now() })
+  const startedAt = useRef(Date.now())
+  const markStarted = useCallback(() => { startedAt.current = Date.now() }, [runId])
+  const finish = useCallback((result: Omit<GameResult, 'gameId' | 'runId' | 'version' | 'seed' | 'startedAt' | 'endedAt'>) => onDone({ ...result, runId, seed, gameId, version: 'arcade-2.0.0', startedAt: startedAt.current, endedAt: Date.now() }), [gameId, onDone, runId, seed])
+  return { finish, markStarted }
 }
 
 export function PauseCover({ paused }: { paused: boolean }) { return paused ? <div className="pause-cover"><b>PAUSED</b><span>hit pause to get back in there</span></div> : null }
