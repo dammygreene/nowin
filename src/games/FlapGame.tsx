@@ -3,15 +3,18 @@ import { SeededRng } from '../game-core/rng'
 import mascot from '../assets/mascot/nowin-mascot.png'
 import type { ActiveGameProps } from './GameShell'
 
-const WIDTH = 820
-const HEIGHT = 430
+// The playfield intentionally follows the familiar 288 × 512 vertical arcade
+// proportion: a small fixed flyer, broad capped pipes, and a 100-ish pixel gap.
+const WIDTH = 288
+const HEIGHT = 512
+const GROUND_Y = 400
 const TOTAL = 25
-const BIRD_X = 154
-const BIRD_RADIUS = 23
-const PIPE_WIDTH = 66
-const SCROLL_SPEED = 2.75
-const FLAP_VELOCITY = -6.25
-const GRAVITY = 0.34
+const BIRD_X = 60
+const BIRD_RADIUS = 16
+const PIPE_WIDTH = 52
+const SCROLL_SPEED = 2.35
+const FLAP_VELOCITY = -5.05
+const GRAVITY = 0.29
 
 type Gate = {
   id: number
@@ -34,23 +37,17 @@ type FlapState = {
 }
 
 const clamp = (value: number, minimum: number, maximum: number) => Math.max(minimum, Math.min(maximum, value))
-const gapSizeFor = (gate: Gate) => gate.id >= 20 ? 118 : 142
-const pipeGapBounds = (gapSize: number) => ({ minimum: 72 + gapSize / 2, maximum: HEIGHT - 82 - gapSize / 2 })
+const gapSizeFor = (gate: Gate) => gate.id >= 20 ? 96 : 108
+const pipeGapBounds = (gapSize: number) => ({ minimum: 55 + gapSize / 2, maximum: GROUND_Y - 30 - gapSize / 2 })
 
 function makeGates(seed: number): Gate[] {
   const rng = new SeededRng(seed)
   return Array.from({ length: TOTAL }, (_, id) => {
-    const size = id >= 20 ? 118 : 142
+    const size = id >= 20 ? 96 : 108
     const bounds = pipeGapBounds(size)
-    return {
-      id,
-      x: 470 + id * 164,
-      gap: bounds.minimum + rng.next() * (bounds.maximum - bounds.minimum),
-      targetGap: 0,
-      scored: false,
-      shifted: false
-    }
-  }).map(gate => ({ ...gate, targetGap: gate.gap }))
+    const gap = bounds.minimum + rng.next() * (bounds.maximum - bounds.minimum)
+    return { id, x: 330 + id * 148, gap, targetGap: gap, scored: false, shifted: false }
+  })
 }
 
 function freshState(seed: number): FlapState {
@@ -58,9 +55,9 @@ function freshState(seed: number): FlapState {
 }
 
 function pipeMoveShouldTrigger(gate: Gate, birdY: number): boolean {
-  // The last stretch is NOWIN's tell: when the head is confidently centred in
-  // a late gap, the pipe gives one visible pink warning then moves away.
-  return (gate.id === 20 || gate.id === 22) && !gate.shifted && gate.x < 335 && gate.x > BIRD_X + 42 && Math.abs(birdY - gate.gap) < 40
+  // In the final run, NOWIN watches a clean approach. The selected pipes flash
+  // before moving their opening away, so recovery is possible but not obvious.
+  return (gate.id === 20 || gate.id === 22) && !gate.shifted && gate.x < 190 && gate.x > BIRD_X + 36 && Math.abs(birdY - gate.gap) < 30
 }
 
 function Pipe({ gate }: { gate: Gate }) {
@@ -68,15 +65,15 @@ function Pipe({ gate }: { gate: Gate }) {
   const top = gate.gap - size / 2
   const bottom = gate.gap + size / 2
   const late = gate.id >= 20
-  const pipeFill = late ? '#7fce67' : '#5fbe68'
-  const capFill = late ? '#b6ef72' : '#8be36b'
+  const pipeFill = late ? '#79c95e' : '#62bd5a'
+  const capFill = late ? '#b0e978' : '#8bdd64'
   return <g className={gate.shifted ? 'flap-pipe flap-pipe--shifted' : 'flap-pipe'}>
-    <rect x={gate.x} y="0" width={PIPE_WIDTH} height={top} rx="9" fill={pipeFill} stroke="#172337" strokeWidth="7"/>
-    <rect x={gate.x - 8} y={top - 17} width={PIPE_WIDTH + 16} height="20" rx="6" fill={capFill} stroke="#172337" strokeWidth="6"/>
-    <rect x={gate.x} y={bottom} width={PIPE_WIDTH} height={HEIGHT - bottom - 53} rx="9" fill={pipeFill} stroke="#172337" strokeWidth="7"/>
-    <rect x={gate.x - 8} y={bottom - 3} width={PIPE_WIDTH + 16} height="20" rx="6" fill={capFill} stroke="#172337" strokeWidth="6"/>
-    <path d={`M${gate.x + 14} 18v${Math.max(0, top - 50)}M${gate.x + PIPE_WIDTH - 14} ${bottom + 30}v${Math.max(0, HEIGHT - bottom - 105)}`} stroke="#e5ff9e" strokeWidth="7" strokeLinecap="round" opacity=".55"/>
-    {late && <path d={`M${gate.x + PIPE_WIDTH / 2} ${gate.gap - 15}l12 15-12 15-12-15z`} fill="#ff4fa3" stroke="#172337" strokeWidth="4"/>}
+    <rect x={gate.x} y="0" width={PIPE_WIDTH} height={top} fill={pipeFill} stroke="#172337" strokeWidth="3"/>
+    <rect x={gate.x - 4} y={top - 15} width={PIPE_WIDTH + 8} height="18" rx="2" fill={capFill} stroke="#172337" strokeWidth="3"/>
+    <rect x={gate.x} y={bottom} width={PIPE_WIDTH} height={GROUND_Y - bottom} fill={pipeFill} stroke="#172337" strokeWidth="3"/>
+    <rect x={gate.x - 4} y={bottom - 3} width={PIPE_WIDTH + 8} height="18" rx="2" fill={capFill} stroke="#172337" strokeWidth="3"/>
+    <path d={`M${gate.x + 10} 0v${Math.max(0, top - 24)}M${gate.x + PIPE_WIDTH - 10} ${bottom + 22}v${Math.max(0, GROUND_Y - bottom - 36)}`} stroke="#dcffad" strokeWidth="4" opacity=".62"/>
+    {late && <path d={`M${gate.x + PIPE_WIDTH / 2} ${gate.gap - 10}l8 10-8 10-8-10z`} fill="#ff4fa3" stroke="#172337" strokeWidth="2"/>}
   </g>
 }
 
@@ -85,13 +82,19 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
   const [view, setView] = useState(game.current)
   const [warning, setWarning] = useState(false)
   const last = useRef(0)
+  const warningTimer = useRef<number | null>(null)
 
   useEffect(() => {
     game.current = freshState(seed)
     last.current = 0
+    if (warningTimer.current !== null) window.clearTimeout(warningTimer.current)
     setWarning(false)
     setView({ ...game.current, gates: [...game.current.gates] })
   }, [seed])
+
+  useEffect(() => () => {
+    if (warningTimer.current !== null) window.clearTimeout(warningTimer.current)
+  }, [])
 
   const flap = useCallback(() => {
     if (paused || game.current.done) return
@@ -124,32 +127,32 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
       current.gates.forEach(gate => {
         gate.x -= SCROLL_SPEED * delta
         if (gate.gap !== gate.targetGap) {
-          const movement = Math.sign(gate.targetGap - gate.gap) * Math.min(Math.abs(gate.targetGap - gate.gap), 4.2 * delta)
+          const movement = Math.sign(gate.targetGap - gate.gap) * Math.min(Math.abs(gate.targetGap - gate.gap), 3.4 * delta)
           gate.gap += movement
         }
         if (pipeMoveShouldTrigger(gate, current.y)) {
-          const size = gapSizeFor(gate)
-          const bounds = pipeGapBounds(size)
+          const bounds = pipeGapBounds(gapSizeFor(gate))
           const direction = current.y < gate.gap ? 1 : -1
-          gate.targetGap = clamp(gate.gap + direction * 54, bounds.minimum, bounds.maximum)
+          gate.targetGap = clamp(gate.gap + direction * 38, bounds.minimum, bounds.maximum)
           gate.shifted = true
           current.betrayalSeen = true
           current.inputs.push(`nowin:pipe-${gate.id}-${direction > 0 ? 'drops' : 'rises'}`)
           setWarning(true)
-          window.setTimeout(() => setWarning(false), 720)
+          if (warningTimer.current !== null) window.clearTimeout(warningTimer.current)
+          warningTimer.current = window.setTimeout(() => setWarning(false), 700)
         }
       })
 
-      if (current.y - BIRD_RADIUS < 0 || current.y + BIRD_RADIUS > HEIGHT - 52) {
+      if (current.y - BIRD_RADIUS < 0 || current.y + BIRD_RADIUS > GROUND_Y) {
         current.done = true
         onFinish({ result: 'lost', score: current.score, detail: 'Gravity remains undefeated.', inputs: current.inputs, betrayalSeen: current.betrayalSeen })
         return
       }
 
       for (const gate of current.gates) {
-        const size = gapSizeFor(gate)
-        const top = gate.gap - size / 2
-        const bottom = gate.gap + size / 2
+        const gapSize = gapSizeFor(gate)
+        const top = gate.gap - gapSize / 2
+        const bottom = gate.gap + gapSize / 2
         const overlapsPipe = gate.x < BIRD_X + BIRD_RADIUS && gate.x + PIPE_WIDTH > BIRD_X - BIRD_RADIUS
         if (overlapsPipe && (current.y - BIRD_RADIUS < top || current.y + BIRD_RADIUS > bottom)) {
           current.done = true
@@ -160,7 +163,7 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
           gate.scored = true
           current.score++
           if (current.score === TOTAL) {
-            current.finishX = WIDTH + 70
+            current.finishX = WIDTH + 42
             current.inputs.push('finish-dock')
           }
         }
@@ -168,15 +171,15 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
 
       if (current.finishX !== null) {
         current.finishX -= SCROLL_SPEED * delta
-        const platformTop = HEIGHT - 96
-        const overPlatform = current.finishX < BIRD_X + BIRD_RADIUS && current.finishX + 170 > BIRD_X - BIRD_RADIUS
-        const landing = current.y + BIRD_RADIUS >= platformTop && current.y + BIRD_RADIUS <= platformTop + 22 && current.velocity >= 0
+        const platformTop = GROUND_Y - 48
+        const overPlatform = current.finishX < BIRD_X + BIRD_RADIUS && current.finishX + 96 > BIRD_X - BIRD_RADIUS
+        const landing = current.y + BIRD_RADIUS >= platformTop && current.y + BIRD_RADIUS <= platformTop + 15 && current.velocity >= 0
         if (overPlatform && landing) {
           current.done = true
           onFinish({ result: 'won', score: TOTAL, detail: 'Twenty-five gates, then a clean landing. Disgusting.', inputs: current.inputs, betrayalSeen: current.betrayalSeen })
           return
         }
-        if (current.finishX + 170 < BIRD_X - BIRD_RADIUS) {
+        if (current.finishX + 96 < BIRD_X - BIRD_RADIUS) {
           current.done = true
           onFinish({ result: 'lost', score: TOTAL, detail: 'You passed every pipe and missed the dock.', inputs: current.inputs, betrayalSeen: current.betrayalSeen })
           return
@@ -191,32 +194,32 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
 
   useEffect(() => setHud(view.finishX !== null ? 'LAND ON THE NOWIN DOCK' : `${view.score}/${TOTAL} GATES`), [setHud, view.finishX, view.score])
 
-  const birdTilt = clamp(view.velocity * 1.75, -26, 54)
+  const birdTilt = clamp(view.velocity * 3.1, -22, 62)
   return <div className={`flap-game ${warning ? 'flap-game--warning' : ''}`}>
-    <p className="game-tip">Tap or press space to flap. In the final stretch, a pink pipe warning means the gap is about to dodge your line.</p>
+    <p className="game-tip">Tap or press space to flap. A pink warning in the final stretch means a pipe is about to move its gap.</p>
     <div className="flap-stage" onPointerDown={flap} role="application" aria-label="Flap game">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="flap-sky" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#7be6f2"/><stop offset="1" stopColor="#b8f5f0"/></linearGradient>
-          <pattern id="flap-clouds" width="180" height="110" patternUnits="userSpaceOnUse"><path d="M14 50c0-11 9-20 21-20 8 0 15 4 18 11 3-3 7-4 11-4 11 0 20 9 20 20H14z" fill="#fff8e8" opacity=".8"/></pattern>
-          <clipPath id="flap-mascot-mask"><circle cx="0" cy="0" r="31"/></clipPath>
+          <linearGradient id="flap-sky" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#70d9ef"/><stop offset="1" stopColor="#d2f8f0"/></linearGradient>
+          <pattern id="flap-clouds" width="144" height="94" patternUnits="userSpaceOnUse"><path d="M14 53c0-9 7-16 16-16 7 0 12 3 15 9 2-2 5-3 9-3 9 0 16 7 16 16H14z" fill="#fff8e8" opacity=".76"/></pattern>
+          <clipPath id="flap-mascot-mask"><circle cx="0" cy="0" r="17"/></clipPath>
         </defs>
         <rect width={WIDTH} height={HEIGHT} fill="url(#flap-sky)"/>
-        <rect width={WIDTH} height={HEIGHT - 48} fill="url(#flap-clouds)" opacity=".72"/>
-        <circle cx="690" cy="72" r="32" fill="#ffe45c" stroke="#172337" strokeWidth="6"/>
-        <path d={`M0 ${HEIGHT - 104}L90 ${HEIGHT - 136}l92 33 111-49 112 49 112-37 90 37 103-57 110 57v58H0z`} fill="#77c86b" stroke="#172337" strokeWidth="6"/>
+        <rect width={WIDTH} height={GROUND_Y} fill="url(#flap-clouds)" opacity=".75"/>
+        <circle cx="238" cy="58" r="20" fill="#ffe45c" stroke="#172337" strokeWidth="3"/>
+        <g fill="#8dcc8f" stroke="#172337" strokeWidth="2" opacity=".83"><path d={`M0 ${GROUND_Y - 58}h18v-25h14v25h17v-43h20v43h15v-18h17v18h21v-33h17v33h21v-25h18v25h19v-45h16v45h19v-22h18v22h22v58H0z`}/></g>
         {view.gates.map(gate => <Pipe key={gate.id} gate={gate}/>) }
-        {view.finishX !== null && <g transform={`translate(${view.finishX} ${HEIGHT - 96})`}><rect x="0" y="0" width="170" height="22" rx="10" fill="#ff4fa3" stroke="#172337" strokeWidth="6"/><path d="M20 0v-29h19l10 12 10-12h19v29" fill="#ffe45c" stroke="#172337" strokeWidth="5"/><text x="88" y="15" textAnchor="middle" fontSize="10" fontWeight="900" fill="#172337">NOWIN DOCK</text></g>}
-        {warning && <g transform="translate(294 24)"><rect width="232" height="38" rx="10" fill="#ff4fa3" stroke="#172337" strokeWidth="5"/><text x="116" y="25" textAnchor="middle" fontSize="15" fontWeight="900" fill="#172337">PIPE PANIC!</text></g>}
+        {view.finishX !== null && <g transform={`translate(${view.finishX} ${GROUND_Y - 48})`}><rect x="0" y="0" width="96" height="15" rx="6" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><path d="M10 0v-20h14l8 8 8-8h14v20" fill="#ffe45c" stroke="#172337" strokeWidth="3"/><text x="51" y="11" textAnchor="middle" fontSize="6" fontWeight="900" fill="#172337">DOCK</text></g>}
         <g transform={`translate(${BIRD_X} ${view.y}) rotate(${birdTilt})`}>
-          <circle r="35" fill="#fff8e8" stroke="#172337" strokeWidth="6"/>
-          <g clipPath="url(#flap-mascot-mask)"><image href={mascot} x="-55" y="-40" width="110" height="125" preserveAspectRatio="xMidYMid meet"/></g>
-          <circle r="31" fill="none" stroke="#fff8e8" strokeWidth="3" opacity=".85"/>
-          <path d="M27 2l18 7-17 8z" fill="#ffcf3c" stroke="#172337" strokeWidth="4"/>
+          <circle r="20" fill="#fff8e8" stroke="#172337" strokeWidth="3"/>
+          <g clipPath="url(#flap-mascot-mask)"><image href={mascot} x="-36" y="-26" width="72" height="82" preserveAspectRatio="xMidYMid meet"/></g>
+          <circle r="17" fill="none" stroke="#fff8e8" strokeWidth="2" opacity=".9"/>
         </g>
-        <rect y={HEIGHT - 52} width={WIDTH} height="52" fill="#ffe45c" stroke="#172337" strokeWidth="6"/>
-        <path d={`M0 ${HEIGHT - 30}h${WIDTH}`} stroke="#fff8e8" strokeWidth="7" strokeDasharray="18 14"/>
-        <text x="26" y="42" fontSize="28" fontWeight="900" fill="#172337" stroke="#fff8e8" strokeWidth="3" paintOrder="stroke">{view.score}</text>
+        <rect y={GROUND_Y} width={WIDTH} height={HEIGHT - GROUND_Y} fill="#e8c063" stroke="#172337" strokeWidth="3"/>
+        <rect y={GROUND_Y} width={WIDTH} height="12" fill="#83d65b" stroke="#172337" strokeWidth="3"/>
+        <path d={`M0 ${GROUND_Y + 35}h${WIDTH}M0 ${GROUND_Y + 76}h${WIDTH}`} stroke="#d39f48" strokeWidth="3" strokeDasharray="8 7" opacity=".72"/>
+        <text x={WIDTH / 2} y="69" textAnchor="middle" fontSize="46" fontWeight="900" fill="#fff8e8" stroke="#172337" strokeWidth="3" paintOrder="stroke">{view.score}</text>
+        {warning && <g transform="translate(69 22)"><rect width="150" height="28" rx="7" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><text x="75" y="19" textAnchor="middle" fontSize="11" fontWeight="900" fill="#172337">PIPE PANIC!</text></g>}
       </svg>
       <button className="flap-tap" aria-label="Flap">TAP / SPACE</button>
     </div>
