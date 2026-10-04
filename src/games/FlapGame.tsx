@@ -30,7 +30,6 @@ type FlapState = {
   velocity: number
   gates: Gate[]
   score: number
-  finishX: number | null
   done: boolean
   inputs: string[]
   betrayalSeen: boolean
@@ -51,7 +50,7 @@ function makeGates(seed: number): Gate[] {
 }
 
 function freshState(seed: number): FlapState {
-  return { y: HEIGHT / 2, velocity: 0, gates: makeGates(seed), score: 0, finishX: null, done: false, inputs: [], betrayalSeen: false }
+  return { y: HEIGHT / 2, velocity: 0, gates: makeGates(seed), score: 0, done: false, inputs: [], betrayalSeen: false }
 }
 
 function pipeMoveShouldTrigger(gate: Gate, birdY: number): boolean {
@@ -163,26 +162,10 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
           gate.scored = true
           current.score++
           if (current.score === TOTAL) {
-            current.finishX = WIDTH + 42
-            current.inputs.push('finish-dock')
+            current.done = true
+            onFinish({ result: 'won', score: TOTAL, detail: 'Twenty-five pipes. You made it through.', inputs: current.inputs, betrayalSeen: current.betrayalSeen })
+            return
           }
-        }
-      }
-
-      if (current.finishX !== null) {
-        current.finishX -= SCROLL_SPEED * delta
-        const platformTop = GROUND_Y - 48
-        const overPlatform = current.finishX < BIRD_X + BIRD_RADIUS && current.finishX + 96 > BIRD_X - BIRD_RADIUS
-        const landing = current.y + BIRD_RADIUS >= platformTop && current.y + BIRD_RADIUS <= platformTop + 15 && current.velocity >= 0
-        if (overPlatform && landing) {
-          current.done = true
-          onFinish({ result: 'won', score: TOTAL, detail: 'Twenty-five gates, then a clean landing. Disgusting.', inputs: current.inputs, betrayalSeen: current.betrayalSeen })
-          return
-        }
-        if (current.finishX + 96 < BIRD_X - BIRD_RADIUS) {
-          current.done = true
-          onFinish({ result: 'lost', score: TOTAL, detail: 'You passed every pipe and missed the dock.', inputs: current.inputs, betrayalSeen: current.betrayalSeen })
-          return
         }
       }
 
@@ -192,7 +175,7 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
     return () => cancelAnimationFrame(frame)
   }, [onFinish, paused])
 
-  useEffect(() => setHud(view.finishX !== null ? 'LAND ON THE NOWIN DOCK' : `${view.score}/${TOTAL} GATES`), [setHud, view.finishX, view.score])
+  useEffect(() => setHud(`${view.score}/${TOTAL} GATES`), [setHud, view.score])
 
   const birdTilt = clamp(view.velocity * 3.1, -22, 62)
   return <div className={`flap-game ${warning ? 'flap-game--warning' : ''}`}>
@@ -209,7 +192,6 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
         <circle cx="238" cy="58" r="20" fill="#ffe45c" stroke="#172337" strokeWidth="3"/>
         <g fill="#8dcc8f" stroke="#172337" strokeWidth="2" opacity=".83"><path d={`M0 ${GROUND_Y - 58}h18v-25h14v25h17v-43h20v43h15v-18h17v18h21v-33h17v33h21v-25h18v25h19v-45h16v45h19v-22h18v22h22v58H0z`}/></g>
         {view.gates.map(gate => <Pipe key={gate.id} gate={gate}/>) }
-        {view.finishX !== null && <g transform={`translate(${view.finishX} ${GROUND_Y - 48})`}><rect x="0" y="0" width="96" height="15" rx="6" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><path d="M10 0v-20h14l8 8 8-8h14v20" fill="#ffe45c" stroke="#172337" strokeWidth="3"/><text x="51" y="11" textAnchor="middle" fontSize="6" fontWeight="900" fill="#172337">DOCK</text></g>}
         <g transform={`translate(${BIRD_X} ${view.y}) rotate(${birdTilt})`}>
           <circle r="20" fill="#fff8e8" stroke="#172337" strokeWidth="3"/>
           <g clipPath="url(#flap-mascot-mask)"><image href={mascot} x="-36" y="-26" width="72" height="82" preserveAspectRatio="xMidYMid meet"/></g>
@@ -221,7 +203,6 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
         <text x={WIDTH / 2} y="69" textAnchor="middle" fontSize="46" fontWeight="900" fill="#fff8e8" stroke="#172337" strokeWidth="3" paintOrder="stroke">{view.score}</text>
         {warning && <g transform="translate(69 22)"><rect width="150" height="28" rx="7" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><text x="75" y="19" textAnchor="middle" fontSize="11" fontWeight="900" fill="#172337">PIPE PANIC!</text></g>}
       </svg>
-      <button className="flap-tap" aria-label="Flap">TAP / SPACE</button>
     </div>
   </div>
 }
