@@ -30,6 +30,7 @@ type FlapState = {
   velocity: number
   gates: Gate[]
   score: number
+  started: boolean
   done: boolean
   inputs: string[]
   betrayalSeen: boolean
@@ -50,7 +51,10 @@ function makeGates(seed: number): Gate[] {
 }
 
 function freshState(seed: number): FlapState {
-  return { y: HEIGHT / 2, velocity: 0, gates: makeGates(seed), score: 0, done: false, inputs: [], betrayalSeen: false }
+  // Like the original, a run is not live until the player gives the first flap.
+  // This leaves a stable, readable starting state instead of letting gravity end
+  // the attempt while the player is still moving from READY to the playfield.
+  return { y: HEIGHT / 2, velocity: 0, gates: makeGates(seed), score: 0, started: false, done: false, inputs: [], betrayalSeen: false }
 }
 
 function pipeMoveShouldTrigger(gate: Gate, birdY: number): boolean {
@@ -97,8 +101,10 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
 
   const flap = useCallback(() => {
     if (paused || game.current.done) return
+    const firstFlap = !game.current.started
+    game.current.started = true
     game.current.velocity = FLAP_VELOCITY
-    game.current.inputs.push('flap')
+    game.current.inputs.push(firstFlap ? 'start-flap' : 'flap')
   }, [paused])
 
   useEffect(() => {
@@ -117,9 +123,15 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
     const loop = (now: number) => {
       frame = requestAnimationFrame(loop)
       if (paused || game.current.done) return
+      const current = game.current
+      // A READY click only opens the cabinet. The first tap/Space both starts
+      // the scroll and supplies the first flap, so an untouched bird cannot die.
+      if (!current.started) {
+        last.current = now
+        return
+      }
       const delta = Math.min(28, now - last.current || 16) / 16
       last.current = now
-      const current = game.current
       current.velocity += GRAVITY * delta
       current.y += current.velocity * delta
 
@@ -175,11 +187,11 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
     return () => cancelAnimationFrame(frame)
   }, [onFinish, paused])
 
-  useEffect(() => setHud(`${view.score}/${TOTAL} GATES`), [setHud, view.score])
+  useEffect(() => setHud(view.started ? `${view.score}/${TOTAL} GATES` : 'TAP TO FLY'), [setHud, view.score, view.started])
 
   const birdTilt = clamp(view.velocity * 3.1, -22, 62)
-  return <div className={`flap-game ${warning ? 'flap-game--warning' : ''}`}>
-    <p className="game-tip">Tap or press space to flap. A pink warning in the final stretch means a pipe is about to move its gap.</p>
+  return <div className={`flap-game ${warning ? 'flap-game--warning' : ''} ${view.started ? '' : 'flap-game--ready'}`}>
+    <p className="game-tip">Tap once to begin, then keep tapping to fly. A pink warning in the final stretch means a pipe is about to move its gap.</p>
     <div className="flap-stage" onPointerDown={flap} role="application" aria-label="Flap game">
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="xMidYMid meet">
         <defs>
@@ -191,6 +203,7 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
         <rect width={WIDTH} height={GROUND_Y} fill="url(#flap-clouds)" opacity=".75"/>
         <circle cx="238" cy="58" r="20" fill="#ffe45c" stroke="#172337" strokeWidth="3"/>
         <g fill="#8dcc8f" stroke="#172337" strokeWidth="2" opacity=".83"><path d={`M0 ${GROUND_Y - 58}h18v-25h14v25h17v-43h20v43h15v-18h17v18h21v-33h17v33h21v-25h18v25h19v-45h16v45h19v-22h18v22h22v58H0z`}/></g>
+        {!view.started && <g className="flap-start-prompt" pointerEvents="none" transform="translate(88 118)"><rect x="0" y="0" width="112" height="30" rx="7" fill="#fff8e8" stroke="#172337" strokeWidth="3"/><path d="M17 15l8-7v5h9v4h-9v5z" fill="#ff4fa3" stroke="#172337" strokeWidth="1.5"/><text x="69" y="20" textAnchor="middle" fontSize="10" fontWeight="900" fill="#172337">FLAP TO START</text></g>}
         {view.gates.map(gate => <Pipe key={gate.id} gate={gate}/>) }
         <g transform={`translate(${BIRD_X} ${view.y}) rotate(${birdTilt})`}>
           <circle r="20" fill="#fff8e8" stroke="#172337" strokeWidth="3"/>
@@ -200,7 +213,7 @@ export function FlapGame({ seed, onFinish, setHud, paused }: ActiveGameProps) {
         <rect y={GROUND_Y} width={WIDTH} height={HEIGHT - GROUND_Y} fill="#e8c063" stroke="#172337" strokeWidth="3"/>
         <rect y={GROUND_Y} width={WIDTH} height="12" fill="#83d65b" stroke="#172337" strokeWidth="3"/>
         <path d={`M0 ${GROUND_Y + 35}h${WIDTH}M0 ${GROUND_Y + 76}h${WIDTH}`} stroke="#d39f48" strokeWidth="3" strokeDasharray="8 7" opacity=".72"/>
-        <text x={WIDTH / 2} y="69" textAnchor="middle" fontSize="46" fontWeight="900" fill="#fff8e8" stroke="#172337" strokeWidth="3" paintOrder="stroke">{view.score}</text>
+        {view.started && <text x={WIDTH / 2} y="69" textAnchor="middle" fontSize="46" fontWeight="900" fill="#fff8e8" stroke="#172337" strokeWidth="3" paintOrder="stroke">{view.score}</text>}
         {warning && <g transform="translate(69 22)"><rect width="150" height="28" rx="7" fill="#ff4fa3" stroke="#172337" strokeWidth="3"/><text x="75" y="19" textAnchor="middle" fontSize="11" fontWeight="900" fill="#172337">PIPE PANIC!</text></g>}
       </svg>
     </div>
