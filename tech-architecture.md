@@ -1,173 +1,49 @@
 # NOWIN Arcade — Technical Architecture
 
-## Stack
+## Shipped stack
 
 - Vite 8
 - React
 - TypeScript
-- Phaser 4.2.1
-- Vercel-compatible server functions for production adapters
-- Browser localStorage for local player stats and development persistence
+- Vercel Functions under `api/`
+- Private Vercel Blob storage through `@vercel/blob`
+- Server-side Solana public-key validation through `@solana/addresses`
 
-Keep the frontend deployable as a static web app.
+The arcade client contains the game UI. Server-only claim code and secrets stay in Vercel Functions and are excluded from the client bundle.
 
-## Architecture layers
+## Runtime layers
 
-### React shell
-Responsible for:
-- routing
-- arcade lobby
-- game cards
-- stats
-- leaderboards
-- modals
-- claim flow
-- global UI
+### React shell and games
 
-### Phaser game runtime
-Responsible for:
-- game rendering
-- physics/game loop
-- input
-- scoring
-- deterministic state
-- game events
+The application shell owns hash navigation, lobby, six cabinets, result state, responsive controls, and the post-win claim panel. Game modules hold active gameplay state in component refs/state. A result supplies the game, run ID, seed, score, completion time, attempt number, and completion timestamp to the claim UI.
 
-### Shared game contract
+### Claim API
 
-Define a type-safe contract similar to:
+`POST /api/claims`:
 
-```ts
-interface GameDefinition {
-  id: string;
-  name: string;
-  mode: 'solo' | 'vs-ai';
-  description: string;
-  create(config: GameConfig): GameInstance;
-}
+- accepts a wallet and a structured winning-result submission;
+- validates payload size/shape, game identifier, finite values, ISO time, and Solana `PublicKey` server-side;
+- calls `verifyWinningRun`, an explicit boundary for future server replay verification;
+- currently writes only `PENDING`/`PENDING_REVIEW` records because a replay verifier is not configured;
+- creates a deterministic SHA-256 record path for each run with overwrite disabled, providing atomic run-ID idempotency;
+- rate-limits repeated requests in the active Vercel Function instance.
 
-interface GameInstance {
-  start(): void;
-  pause(): void;
-  restart(seed?: number): void;
-  destroy(): void;
-  getResult(): GameResult | null;
-}
-```
+### Private storage
 
-Use the actual types you prefer, but preserve the contract idea.
+The record path is `nowin-claims/records/<claim-id>.json`; the derived export path is `nowin-claims/exports/nowin-winners.csv`. All Blob SDK calls use `access: 'private'`. Claims are never written to browser storage, a committed file, or the Vercel function filesystem.
 
-## Determinism
+### Admin API
 
-Create a shared seeded RNG utility.
+`GET /api/admin/export` and `PATCH /api/admin/claims` require a timing-safe comparison with the server-only `NOWIN_ADMIN_SECRET` from an `Authorization: Bearer` header. They are not called by the browser UI.
 
-Every game receives a seed.
+The update route changes only `status`, `reviewed_at`, `tx_signature`, and `notes`; it cannot mutate a wallet or game result. Export reads private records, safely generates CSV, writes the private derived CSV, and streams a download only to an authenticated administrator.
 
-The debug harness must be able to run:
+## Security boundary
 
-`seed + normalized inputs -> exact result`
+The client never receives `BLOB_READ_WRITE_TOKEN` or `NOWIN_ADMIN_SECRET`; neither may use a `VITE_` prefix. There are no private keys, signing credentials, wallet connections, client transaction signing, treasury integrations, or automatic payouts.
 
-Use this to:
-- reproduce wins
-- test betrayals
-- reproduce bugs
-- verify claims
+A pending submission is not proof of a legitimate win. Before claims can be marked automatically eligible, add server-issued run identities, normalized input capture, deterministic server replay verification, durable distributed rate limiting, abuse monitoring, and security/legal review.
 
-## State machine
+## Quality gates
 
-Each game should use explicit states:
-
-`idle -> countdown -> playing -> near-miss -> lost/won -> result`
-
-Do not allow race conditions such as multiple win events, multiple claim events, or duplicate result submissions.
-
-## Telemetry interface
-
-Create an adapter instead of coupling game code to a specific analytics vendor.
-
-```ts
-interface TelemetryProvider {
-  track(event: string, payload?: Record<string, unknown>): void;
-}
-```
-
-Use a no-op/local provider by default.
-
-## Persistence
-
-Create:
-
-```ts
-interface PlayerStore {
-  getGameStats(gameId: string): GameStats;
-  saveAttempt(result: GameResult): void;
-  getRecentResults(): GameResult[];
-}
-```
-
-Development provider: localStorage.
-
-Production persistence: provider boundary ready for Supabase/Postgres or another backend.
-
-## Reward provider
-
-Create a provider boundary so game code never knows treasury details.
-
-```ts
-interface RewardProvider {
-  isEnabled(): boolean;
-  beginClaim(runId: string): Promise<ClaimStart>;
-  submitClaim(runId: string, wallet: string): Promise<ClaimResult>;
-}
-```
-
-Production implementation must live server-side where secrets are protected.
-
-## Solana wallet validation
-
-The frontend may perform basic format validation for UX, but server-side validation remains authoritative.
-
-Do not bundle or expose:
-- private keys
-- seed phrases
-- RPC credentials with signing capability
-- treasury credentials
-
-## Debug tools
-
-Add a developer-only debug panel enabled only in development mode.
-
-Features:
-- set seed
-- force game state
-- jump to late-game checkpoint
-- toggle betrayal event
-- simulate win
-- inspect event log
-- replay deterministic run
-
-Do not expose this panel in production.
-
-## Performance
-
-Target:
-- smooth 60fps gameplay on normal desktop hardware
-- acceptable performance on modern mid-range mobile devices
-- no unnecessary React rerenders during active game loops
-- keep Phaser state inside Phaser while the game is running
-
-## Error handling
-
-Games should fail gracefully to a result state instead of crashing the entire SPA.
-
-Wrap game mount/unmount boundaries with React error recovery where practical.
-
-## Security
-
-Never trust:
-- score submitted by client
-- game result submitted by client
-- wallet ownership claim without server-side checks
-- reward amount supplied by client
-
-All reward eligibility must be generated or verified server-side.
+Automated API tests use an in-memory test double only; production code has no local-storage fallback. Tests cover valid/invalid claims, duplicate run protection, malformed data, missing fields, storage failure, CSV safety, admin authentication, admin updates, and export behavior. Real Vercel Blob persistence and browser win/claim interaction remain deployment-time manual checks documented in [`docs/QA-REPORT.md`](./docs/QA-REPORT.md).

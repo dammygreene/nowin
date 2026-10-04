@@ -4,12 +4,6 @@
 
 NOWIN
 
-## Token
-
-$NOWIN
-
-The token is a separate meme/community asset. It is not a gameplay currency.
-
 ## Core line
 
 **Games you know. Wins you don't.**
@@ -19,7 +13,6 @@ The token is a separate meme/community asset. It is not a gameplay currency.
 Use sparingly:
 
 - **You can win. Probably.**
-- **Welcome to the 1%.**
 - **Skill issue.**
 - **That was your fault.**
 - **Someone has to win.**
@@ -27,21 +20,12 @@ Use sparingly:
 
 ## Voice
 
-NOWIN talks like a smug arcade operator.
+NOWIN talks like a smug arcade operator: short, deadpan, mischievous, and never corporate. It must not over-explain the joke or invent social proof, player records, payouts, partnerships, or platform metrics.
 
-Short.
-
-Deadpan.
-
-Mischievous.
-
-Never corporate.
-
-Never over-explains the joke.
-
-## Example result copy
+## Result copy
 
 Failure:
+
 - `skill issue`
 - `that was almost impressive`
 - `you were winning. unfortunate.`
@@ -49,40 +33,20 @@ Failure:
 - `one more. surely.`
 
 Win:
+
 - `wait, you actually won`
-- `welcome to the 1%`
-- `we have to pay this person`
+- `you found the way`
 - `disgusting. congratulations.`
+- `the cabinet is upset.`
 
-## X account style
+## Public messaging rules
 
-The account should behave like NOWIN itself.
-
-Good posts:
-
-> 31,824 attempts today.
-> 
-> 4 winners.
-> 
-> beautiful.
-
-> someone just beat pong
-> 
-> unfortunately we have to pay him
-
-> 98% on Flap
-> 
-> bro is one pixel away from freedom
-
-> day 9
-> 
-> 0 minesweeper winners
-> 
-> skill issue
+Only publish a winner count, challenge participation, prize, payout, partnership, or platform statistic when it is backed by the corresponding live authoritative system. Do not imply that a wallet, token, prize pool, daily competition, ranking, or reward is available when it is not.
 
 Avoid:
-- constant token shilling
-- fake partnership announcements
-- guaranteed return claims
-- pretending the prize pool is larger than it is
-- generic `community / utility / ecosystem` language
+
+- fake partnership announcements;
+- invented player or payout metrics;
+- guaranteed return claims;
+- misleading prize-pool claims;
+- generic `community / utility / ecosystem` language.
